@@ -46,8 +46,8 @@ public class ClientController {
          return new ResponseEntity<>(profitAndLoss, HttpStatus.OK);
 
       } catch (NoAvailableDataException e) {
-         log.info("No available client data in clientIdToClientModelMap for clientId=", clientId);
-         return new ResponseEntity<>("Could not retrieve profitAndLoss for clientId=" + clientId, HttpStatus.NOT_FOUND);
+         log.info("No available client data in clientIdToClientModelMap for clientId={}", clientId);
+         return new ResponseEntity<>("No available client data for clientId=" + clientId, HttpStatus.NOT_FOUND);
 
       } catch (Exception e) {
          log.info("Exception when retrieving profit and loss, exceptionMessage={}", e);
