@@ -6,10 +6,12 @@ import com.iggroup.universityworkshopmw.integration.dto.ClientDto;
 public class ClientTransformer {
 
    public static Client clientDtoToClientModel(ClientDto clientDto) {
+      Double profitAndLoss = clientDto.getProfitAndLoss();
+      Double safeProfitAndLoss = new Double( null == profitAndLoss ? "0" : profitAndLoss.toString() );
       return new Client(
             clientDto.getClientId(),
             clientDto.getUserName(),
-            clientDto.getProfitAndLoss()
+            safeProfitAndLoss
       );
    }
 

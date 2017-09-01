@@ -18,7 +18,7 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void shouldAssignUniqueIdPerAddition() {
+   public void storeNewClient_assignsUniqueIdPerAddition() {
       //Given
       Client client1 = new Client("", "userName1", 0);
       Client client2 = new Client("", "userName2", 0);
@@ -34,7 +34,7 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void shouldGetProfitAndLossForClientId() throws NoAvailableDataException {
+   public void getProfitAndLoss_getsProfitAndLossForClientId() throws NoAvailableDataException {
       //Given
       Client returnClient1 = clientService.storeNewClient(new Client("", "userName1", 0));
       String clientId = returnClient1.getClientId();
@@ -48,7 +48,7 @@ public class ClientServiceTest {
    }
 
    @Test(expected = NoAvailableDataException.class)
-   public void shouldHandleMapContainingNoClientDataForRetrievalOfProfitAndLoss() throws NoAvailableDataException {
+   public void getProfitAndLoss_handlesMapContainingNoClientDataForClientId() throws NoAvailableDataException {
       //Given
       String clientId = "randomIdNotInMap";
 
@@ -57,7 +57,7 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void shouldUpdateProfitAndLoss() throws NoAvailableDataException {
+   public void updateProfitAndLoss_updatesProfitAndLoss() throws NoAvailableDataException {
       //Given
       Client returnClient1 = clientService.storeNewClient(new Client("", "userName1", 0));
       String clientId = returnClient1.getClientId();
@@ -73,7 +73,7 @@ public class ClientServiceTest {
    }
 
    @Test(expected = NoAvailableDataException.class)
-   public void shouldHandleMapContainingNoClientDataForProfitAndLossUpdate() throws NoAvailableDataException {
+   public void updateProfitAndLoss_handlesMapContainingNoClientDataForClientId() throws NoAvailableDataException {
       //Given
       String clientId = "randomIdNotInMap";
 

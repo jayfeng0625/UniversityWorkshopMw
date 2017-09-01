@@ -1,5 +1,6 @@
 package com.iggroup.universityworkshopmw.integration.controllers;
 
+import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.services.ClientService;
 import com.iggroup.universityworkshopmw.integration.dto.ClientDto;
@@ -27,21 +28,30 @@ public class ClientController {
 
    @PostMapping("/createClient")
    public ResponseEntity<?> createClient(@RequestBody ClientDto clientDto) {
-      // TODO: 31/08/2017 TESTS
       try {
          Client clientTransformed = ClientTransformer.clientDtoToClientModel(clientDto);
          ClientDto responseBody = ClientTransformer.clientModelToClientDto(clientService.storeNewClient(clientTransformed));
          return new ResponseEntity<>(responseBody, HttpStatus.OK);
+
       } catch (Exception e) {
-         log.info("Exception when creating new client, exceptionMessage={}", e.getCause().getMessage());
+         log.info("Exception when creating new client, exceptionMessage={}", e);
          return new ResponseEntity<>("Something went wrong when creating a new client", HttpStatus.INTERNAL_SERVER_ERROR);
       }
    }
 
    @GetMapping("/profitAndLoss/{clientId}")
-   public Double getClientProfitAndLoss(@PathVariable("clientId") String clientId) {
-      // TODO: 31/08/2017 tests
-      //Get current profitAndLoss for the client
-      return new Double("10000.00");
+   public ResponseEntity<?> getClientProfitAndLoss(@PathVariable("clientId") String clientId) {
+      try {
+         double profitAndLoss = clientService.getProfitAndLoss(clientId);
+         return new ResponseEntity<>(profitAndLoss, HttpStatus.OK);
+
+      } catch (NoAvailableDataException e) {
+         log.info("No available client data in clientIdToClientModelMap for clientId=", clientId);
+         return new ResponseEntity<>("Could not retrieve profitAndLoss for clientId=" + clientId, HttpStatus.NOT_FOUND);
+
+      } catch (Exception e) {
+         log.info("Exception when retrieving profit and loss, exceptionMessage={}", e);
+         return new ResponseEntity<>("Something went wrong when retrieving profit and loss", HttpStatus.INTERNAL_SERVER_ERROR);
+      }
    }
 }
