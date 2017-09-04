@@ -135,6 +135,6 @@ public class ClientControllerTest {
             .andExpect(status().isNotFound()).andReturn();
 
       final String content = mvcResult.getResponse().getContentAsString();
-      assertEquals("Could not retrieve profitAndLoss for clientId=client_12345", content);
+      assertEquals("No available client data for clientId=client_12345", content);
    }
 }
