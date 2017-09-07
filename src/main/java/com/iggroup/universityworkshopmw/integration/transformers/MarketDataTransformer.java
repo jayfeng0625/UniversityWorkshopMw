@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MarketDataTransformer {
-   public static List<MarketDto> transformMarketListToMarketDtoList(List<Market> listOfMarkets) {
+   public static List<MarketDto> transform(List<Market> listOfMarkets) {
       return listOfMarkets.stream()
             .map(market -> MarketDto.builder()
                   .marketId(market.getMarketId())

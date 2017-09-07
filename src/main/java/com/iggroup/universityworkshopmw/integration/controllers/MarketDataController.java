@@ -34,7 +34,7 @@ public class MarketDataController {
    public ResponseEntity<?> getAllMarketData() {
       try {
          List<Market> listOfMarkets = marketDataService.getAllMarkets();
-         List<MarketDto> responseBody = MarketDataTransformer.transformMarketListToMarketDtoList(listOfMarkets);
+         List<MarketDto> responseBody = MarketDataTransformer.transform(listOfMarkets);
          return new ResponseEntity<>(responseBody, OK);
 
       } catch (Exception e) {

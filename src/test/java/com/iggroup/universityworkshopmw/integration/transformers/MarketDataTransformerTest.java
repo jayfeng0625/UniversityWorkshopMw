@@ -20,7 +20,7 @@ public class MarketDataTransformerTest {
             .currentPrice(100.0)
             .build());
 
-      List<MarketDto> marketDtos = MarketDataTransformer.transformMarketListToMarketDtoList(listOfMarkets);
+      List<MarketDto> marketDtos = MarketDataTransformer.transform(listOfMarkets);
 
       assertThat(marketDtos.size()).isEqualTo(1);
       assertThat(marketDtos.get(0).getMarketId()).isEqualTo("market_1");

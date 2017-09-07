@@ -26,6 +26,16 @@ public class SwaggerConfiguration {
          .apiInfo(apiInfo());
    }
 
+   @Bean
+   public Docket marketDataApi() {
+      return new Docket(SWAGGER_2)
+            .select()
+            .apis(basePackage("com.iggroup.universityworkshopmw.integration.controllers"))
+            .paths(regex("/marketData.*"))
+            .build()
+            .apiInfo(apiInfo());
+   }
+
    private ApiInfo apiInfo() {
       return new ApiInfoBuilder()
          .title("University workshop API")
