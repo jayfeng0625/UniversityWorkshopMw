@@ -51,33 +51,73 @@ public class MarketDataService {
 
       //1
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Gold", 500.9));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Gold")
+            .currentPrice(500.9)
+            .build());
       //2
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Silver", 375.2));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Silver")
+            .currentPrice(375.2)
+            .build());
       //3
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Platinum", 312.0));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Platinum")
+            .currentPrice(312.0)
+            .build());
       //4
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Copper", 250.0));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Copper")
+            .currentPrice(250.0)
+            .build());
       //5
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Natural Gas", 300.7));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Natural Gas")
+            .currentPrice(300.7)
+            .build());
       //6
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Coffee", 205.0));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Coffee")
+            .currentPrice(205.0)
+            .build());
       //7
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Wheat", 175.4));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Wheat")
+            .currentPrice(175.4)
+            .build());
       //8
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Cocoa", 225.1));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Cocoa")
+            .currentPrice(225.1)
+            .build());
       //9
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Cotton", 125.0));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Cotton")
+            .currentPrice(125.0)
+            .build());
       //10
       marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, new Market(marketId, "Sugar", 148.0));
+      marketIdToMarketModelMap.put(marketId, Market.builder()
+            .marketId(marketId)
+            .marketName("Sugar")
+            .currentPrice(148.0)
+            .build());
    }
 }

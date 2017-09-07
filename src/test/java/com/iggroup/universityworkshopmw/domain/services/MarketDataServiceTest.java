@@ -45,7 +45,11 @@ public class MarketDataServiceTest {
    public void updateMarket_updatesMarketInMap() {
       //Given
       Market aRandomMarketFromMap = marketDataService.getAllMarkets().get(0);
-      Market updatedMarket = new Market(aRandomMarketFromMap.getMarketId(), "marketName", 123.1);
+      Market updatedMarket = Market.builder()
+            .marketId(aRandomMarketFromMap.getMarketId())
+            .marketName("marketName")
+            .currentPrice(123.1)
+            .build();
 
       //When
       marketDataService.updateMarket(updatedMarket);

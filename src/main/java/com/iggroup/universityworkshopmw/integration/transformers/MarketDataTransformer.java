@@ -9,7 +9,11 @@ import java.util.stream.Collectors;
 public class MarketDataTransformer {
    public static List<MarketDto> transformMarketListToMarketDtoList(List<Market> listOfMarkets) {
       return listOfMarkets.stream()
-            .map(market -> new MarketDto(market.getMarketId(), market.getMarketName(), market.getCurrentPrice()))
+            .map(market -> MarketDto.builder()
+                  .marketId(market.getMarketId())
+                  .marketName(market.getMarketName())
+                  .currentPrice(market.getCurrentPrice())
+                  .build())
             .collect(Collectors.toList());
    }
 }

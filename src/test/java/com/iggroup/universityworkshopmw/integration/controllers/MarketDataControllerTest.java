@@ -41,7 +41,11 @@ public class MarketDataControllerTest {
    public void getAllMarketData_returnsOkCodeAndListOfMarketInfo() throws Exception {
       //Given
       List<Market> listOfMarkets = new ArrayList<>();
-      listOfMarkets.add(new Market("market_1", "marketName1", 400.0));
+      listOfMarkets.add(Market.builder()
+            .marketId("market_1")
+            .marketName("marketName1")
+            .currentPrice(400.0)
+            .build());
       when(marketDataService.getAllMarkets()).thenReturn(listOfMarkets);
 
       //When

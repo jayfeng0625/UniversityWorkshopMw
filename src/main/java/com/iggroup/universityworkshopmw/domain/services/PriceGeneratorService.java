@@ -34,7 +34,12 @@ public class PriceGeneratorService {
          Double oldPrice = entryValue.getCurrentPrice();
 
          double newMarketPrice = generateNewMarketPrice(oldPrice);
-         marketDataService.updateMarket(new Market(marketId, entryValue.getMarketName(), newMarketPrice));
+         marketDataService.updateMarket(Market.builder()
+               .marketId(marketId)
+               .marketName(entryValue.getMarketName())
+               .currentPrice(newMarketPrice)
+               .build()
+         );
          marketIdsUpdated.add(marketId);
 
          log.info("Updated market price for marketId={}, oldPrice={}, newPrice={}, normalDist={}", marketId, oldPrice, newMarketPrice, (newMarketPrice - oldPrice));

@@ -14,7 +14,11 @@ public class MarketDataTransformerTest {
    @Test
    public void transformMarketListToMarketDtoList_returnsListOfMarketDtos() {
       List<Market> listOfMarkets = new ArrayList<>();
-      listOfMarkets.add(new Market("market_1", "commodity1", 100.0));
+      listOfMarkets.add(Market.builder()
+            .marketId("market_1")
+            .marketName("commodity1")
+            .currentPrice(100.0)
+            .build());
 
       List<MarketDto> marketDtos = MarketDataTransformer.transformMarketListToMarketDtoList(listOfMarkets);
 
