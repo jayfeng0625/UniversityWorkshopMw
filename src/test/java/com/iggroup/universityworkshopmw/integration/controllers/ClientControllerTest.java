@@ -1,6 +1,5 @@
 package com.iggroup.universityworkshopmw.integration.controllers;
 
-import com.iggroup.universityworkshopmw.TestHelper;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.services.ClientService;
@@ -12,10 +11,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.iggroup.universityworkshopmw.TestHelper.APPLICATION_JSON_UTF8;
+import static com.iggroup.universityworkshopmw.TestHelper.convertObjectToJsonBytes;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -45,23 +47,28 @@ public class ClientControllerTest {
 
    @Test
    public void createClient_returnsOkCodeAndClientIdAndProfitAndLoss() throws Exception {
-      //Given
-      ClientDto clientDto = new ClientDto(null, "userName", null);
-      Client clientAdded = new Client("client_12345", "userName", 400);
+      ClientDto clientDto = ClientDto.builder()
+         .clientId(null)
+         .userName("userName")
+         .profitAndLoss(null)
+         .build();
+      Client clientAdded = Client.builder()
+         .clientId("client_12345")
+         .userName("username")
+         .profitAndLoss(400)
+         .build();
       when(clientService.storeNewClient(any(Client.class))).thenReturn(clientAdded);
 
-      //When
       mockMvc.perform(post("/client/createClient")
-            .contentType(TestHelper.APPLICATION_JSON_UTF8)
-            .content(TestHelper.convertObjectToJsonBytes(clientDto))
+            .contentType(APPLICATION_JSON_UTF8)
+            .content(convertObjectToJsonBytes(clientDto))
       )
-            //Then
             .andExpect(status().isOk())
-            .andExpect(content().contentType(TestHelper.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.clientId", is("client_12345")))
             .andExpect(jsonPath("$.profitAndLoss", is(400.0)));
 
-      ArgumentCaptor<Client> clientArgumentCaptor = ArgumentCaptor.forClass(Client.class);
+      ArgumentCaptor<Client> clientArgumentCaptor = forClass(Client.class);
       verify(clientService, times(1)).storeNewClient(clientArgumentCaptor.capture());
       verifyNoMoreInteractions(clientService);
 
@@ -73,16 +80,17 @@ public class ClientControllerTest {
 
    @Test
    public void createClient_handlesAnyException_returnsServerErrorAndInfoString() throws Exception {
-      //Given
-      ClientDto clientDto = new ClientDto(null, "userName", null);
+      ClientDto clientDto = ClientDto.builder()
+         .clientId(null)
+         .userName("userName")
+         .profitAndLoss(null)
+         .build();
       when(clientService.storeNewClient(any(Client.class))).thenThrow(new RuntimeException("Server exception!"));
 
-      //When
       MvcResult mvcResult = mockMvc.perform(post("/client/createClient")
-            .contentType(TestHelper.APPLICATION_JSON_UTF8)
-            .content(TestHelper.convertObjectToJsonBytes(clientDto))
+            .contentType(APPLICATION_JSON_UTF8)
+            .content(convertObjectToJsonBytes(clientDto))
       )
-            //Then
             .andExpect(status().isInternalServerError()).andReturn();
 
       final String content = mvcResult.getResponse().getContentAsString();
@@ -91,18 +99,15 @@ public class ClientControllerTest {
 
    @Test
    public void getClientProfitAndLoss_returnsOkCodeAndClientProfitAndLoss() throws Exception {
-      //Given
       when(clientService.getProfitAndLoss(anyString())).thenReturn(400.0);
 
-      //When
       MvcResult mvcResult = mockMvc.perform(get("/client/profitAndLoss/client_12345"))
-            //Then
             .andExpect(status().isOk()).andReturn();
 
       final String content = mvcResult.getResponse().getContentAsString();
       assertEquals("400.0", content);
 
-      ArgumentCaptor<String> clientIdCaptor = ArgumentCaptor.forClass(String.class);
+      ArgumentCaptor<String> clientIdCaptor = forClass(String.class);
       verify(clientService, times(1)).getProfitAndLoss(clientIdCaptor.capture());
       verifyNoMoreInteractions(clientService);
 
@@ -112,12 +117,9 @@ public class ClientControllerTest {
 
    @Test
    public void getClientProfitAndLoss_handlesAnyException_returnsServerErrorAndInfoString() throws Exception {
-      //Given
       when(clientService.getProfitAndLoss(anyString())).thenThrow(new RuntimeException("Server exception!"));
 
-      //When
       MvcResult mvcResult = mockMvc.perform(get("/client/profitAndLoss/client_12345"))
-            //Then
             .andExpect(status().isInternalServerError()).andReturn();
 
       final String content = mvcResult.getResponse().getContentAsString();
@@ -126,12 +128,9 @@ public class ClientControllerTest {
 
    @Test
    public void getClientProfitAndLoss_handlesNoAvailableDataException_returnsServerErrorAndInfoString() throws Exception {
-      //Given
       when(clientService.getProfitAndLoss(anyString())).thenThrow(new NoAvailableDataException("No available data!"));
 
-      //When
       MvcResult mvcResult = mockMvc.perform(get("/client/profitAndLoss/client_12345"))
-            //Then
             .andExpect(status().isNotFound()).andReturn();
 
       final String content = mvcResult.getResponse().getContentAsString();

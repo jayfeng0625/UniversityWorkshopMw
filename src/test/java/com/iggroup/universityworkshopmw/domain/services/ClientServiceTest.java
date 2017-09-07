@@ -19,15 +19,12 @@ public class ClientServiceTest {
 
    @Test
    public void storeNewClient_assignsUniqueIdPerAddition() {
-      //Given
-      Client client1 = new Client("", "userName1", 0);
-      Client client2 = new Client("", "userName2", 0);
+      Client client1 = createClient("", "userName1", 0);
+      Client client2 = createClient("", "userName2", 0);
 
-      //When
       Client returnClient1 = clientService.storeNewClient(client1);
       Client returnClient2 = clientService.storeNewClient(client2);
 
-      //Then
       assertNotNull(returnClient1.getClientId());
       assertNotNull(returnClient2.getClientId());
       assertNotEquals(returnClient1.getClientId(), returnClient2.getClientId());
@@ -35,50 +32,47 @@ public class ClientServiceTest {
 
    @Test
    public void getProfitAndLoss_getsProfitAndLossForClientId() throws NoAvailableDataException {
-      //Given
-      Client returnClient1 = clientService.storeNewClient(new Client("", "userName1", 0));
+      Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0));
       String clientId = returnClient1.getClientId();
       double expectedProfitAndLoss = returnClient1.getProfitAndLoss();
 
-      //When
       double actualProfitAndLoss = clientService.getProfitAndLoss(clientId);
 
-      //Then
       assertThat(expectedProfitAndLoss, is(actualProfitAndLoss));
    }
 
    @Test(expected = NoAvailableDataException.class)
    public void getProfitAndLoss_handlesMapContainingNoClientDataForClientId() throws NoAvailableDataException {
-      //Given
       String clientId = "randomIdNotInMap";
 
-      //When
       clientService.getProfitAndLoss(clientId);
    }
 
    @Test
    public void updateProfitAndLoss_updatesProfitAndLoss() throws NoAvailableDataException {
-      //Given
-      Client returnClient1 = clientService.storeNewClient(new Client("", "userName1", 0));
+      Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0));
       String clientId = returnClient1.getClientId();
       double initialProfitAndLoss = returnClient1.getProfitAndLoss();
       double profitAndLossUpdate = initialProfitAndLoss - 200;
 
-      //When
       clientService.updateProfitAndLoss(clientId, profitAndLossUpdate);
 
-      //Then
       double returnedProfitAndLoss = clientService.getProfitAndLoss(clientId);
       assertThat(profitAndLossUpdate, is(returnedProfitAndLoss));
    }
 
    @Test(expected = NoAvailableDataException.class)
    public void updateProfitAndLoss_handlesMapContainingNoClientDataForClientId() throws NoAvailableDataException {
-      //Given
       String clientId = "randomIdNotInMap";
 
-      //When
       clientService.updateProfitAndLoss(clientId, 900);
    }
 
+   private Client createClient(String clientId, String userName, double profitAndLoss) {
+      return Client.builder()
+         .clientId(clientId)
+         .userName(userName)
+         .profitAndLoss(profitAndLoss)
+         .build();
+   }
 }
