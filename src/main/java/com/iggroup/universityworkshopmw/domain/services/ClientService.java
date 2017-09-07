@@ -19,7 +19,11 @@ public class ClientService {
 
    public Client storeNewClient(Client client) {
       String uniqueId = Helper.createUniqueId(ID_PREFIX);
-      Client enrichedClient = new Client(uniqueId, client.getUserName(), INITIAL_PROFIT_LOSS);
+      Client enrichedClient = Client.builder()
+         .clientId(uniqueId)
+         .userName(client.getUserName())
+         .profitAndLoss(INITIAL_PROFIT_LOSS)
+         .build();
       clientIdToClientModelMap.put(uniqueId, enrichedClient);
       log.info("Added new client={}", enrichedClient);
       return enrichedClient;

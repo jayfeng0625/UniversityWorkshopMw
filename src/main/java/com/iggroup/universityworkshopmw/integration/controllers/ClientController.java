@@ -4,9 +4,12 @@ import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataExcepti
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.services.ClientService;
 import com.iggroup.universityworkshopmw.integration.dto.ClientDto;
+import com.iggroup.universityworkshopmw.integration.transformers.ClientDtoTransformer;
 import com.iggroup.universityworkshopmw.integration.transformers.ClientTransformer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static java.net.HttpURLConnection.HTTP_BAD_GATEWAY;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -34,11 +40,19 @@ public class ClientController {
    @ApiOperation(value = "Create a new client",
       notes = "Creates a single client",
       response = ClientDto.class)
+   @ApiResponses(value = {
+      @ApiResponse(code = HTTP_OK,
+         message = "Successfully created a client"),
+      @ApiResponse(code = HTTP_BAD_REQUEST,
+         message = "Couldn't recognise request"),
+      @ApiResponse(code = HTTP_BAD_GATEWAY,
+         message = "Couldn't create client")
+   })
    @PostMapping("/createClient")
    public ResponseEntity<?> createClient(@RequestBody ClientDto clientDto) {
       try {
-         Client clientTransformed = ClientTransformer.clientDtoToClientModel(clientDto);
-         ClientDto responseBody = ClientTransformer.clientModelToClientDto(clientService.storeNewClient(clientTransformed));
+         Client clientTransformed = ClientTransformer.transform(clientDto);
+         ClientDto responseBody = ClientDtoTransformer.transform(clientService.storeNewClient(clientTransformed));
          return new ResponseEntity<>(responseBody, OK);
 
       } catch (Exception e) {
@@ -49,6 +63,14 @@ public class ClientController {
 
    @ApiOperation(value = "Get profit and loss",
       notes = "Returns the profit and loss for a single client based on client Id")
+   @ApiResponses(value = {
+      @ApiResponse(code = HTTP_OK,
+         message = "Successfully retrieved profit and loss"),
+      @ApiResponse(code = HTTP_BAD_REQUEST,
+         message = "Couldn't find profit and loss for client"),
+      @ApiResponse(code = HTTP_BAD_GATEWAY,
+         message = "Couldn't retrieve profit and loss for client")
+   })
    @GetMapping("/profitAndLoss/{clientId}")
    public ResponseEntity<?> getClientProfitAndLoss(@PathVariable("clientId") String clientId) {
       try {

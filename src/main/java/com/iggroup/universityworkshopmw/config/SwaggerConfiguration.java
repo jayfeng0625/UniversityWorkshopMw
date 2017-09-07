@@ -8,7 +8,7 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import static springfox.documentation.builders.PathSelectors.any;
+import static springfox.documentation.builders.PathSelectors.regex;
 import static springfox.documentation.builders.RequestHandlerSelectors.basePackage;
 import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 
@@ -17,11 +17,11 @@ import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 public class SwaggerConfiguration {
 
    @Bean
-   public Docket api() {
+   public Docket clientApi() {
       return new Docket(SWAGGER_2)
          .select()
          .apis(basePackage("com.iggroup.universityworkshopmw.integration.controllers"))
-         .paths(any())
+         .paths(regex("/client.*"))
          .build()
          .apiInfo(apiInfo());
    }
