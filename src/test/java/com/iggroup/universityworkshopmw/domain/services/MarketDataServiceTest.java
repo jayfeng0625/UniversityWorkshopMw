@@ -40,4 +40,31 @@ public class MarketDataServiceTest {
       assertThat(marketPrices.keySet()).containsOnly("market_1", "market_2", "market_3", "market_4", "market_5", "market_6", "market_7", "market_8", "market_9", "market_10");
       assertThat(marketPrices.values()).containsOnly(500.9, 375.2, 312.0, 250.0, 300.7, 205.0, 175.4, 225.1, 125.0, 148.0);
    }
+
+   @Test
+   public void updateMarket_updatesMarketInMap() {
+      //Given
+      Market aRandomMarketFromMap = marketDataService.getAllMarkets().get(0);
+      Market updatedMarket = new Market(aRandomMarketFromMap.getMarketId(), "marketName", 123.1);
+
+      //When
+      marketDataService.updateMarket(updatedMarket);
+
+      //Then
+      List<Market> allMarkets = marketDataService.getAllMarkets();
+      assertThat(allMarkets).doesNotContain(aRandomMarketFromMap);
+      assertThat(allMarkets).contains(updatedMarket);
+   }
+
+   @Test
+   public void getShuffledMapSubset_returnsRandomlyOrderedPartialMap() {
+      //Given
+      List<Map.Entry<String, Market>> initialShuffledMapSubset = marketDataService.getShuffledMapSubset();
+
+      //When
+      List<Map.Entry<String, Market>> secondShuffledMapSubset = marketDataService.getShuffledMapSubset();
+
+      //Then
+      assertThat(initialShuffledMapSubset).isNotEqualTo(secondShuffledMapSubset);
+   }
 }

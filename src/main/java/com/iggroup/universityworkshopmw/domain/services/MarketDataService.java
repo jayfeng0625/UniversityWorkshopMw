@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +33,16 @@ public class MarketDataService {
             .collect(Collectors.toMap(Market::getMarketId, Market::getCurrentPrice));
       log.info("Retrieving all market prices={}", idToPriceMap);
       return idToPriceMap;
+   }
+
+   void updateMarket(Market market) {
+      marketIdToMarketModelMap.put(market.getMarketId(), market);
+   }
+
+   List<Map.Entry<String, Market>> getShuffledMapSubset() {
+      List<Map.Entry<String, Market>> marketMapEntries = new ArrayList<>(marketIdToMarketModelMap.entrySet());
+      Collections.shuffle(marketMapEntries);
+      return marketMapEntries.subList(0, marketMapEntries.size() / 2);
    }
 
    private void initialiseMarketModelMap() {
@@ -68,6 +79,5 @@ public class MarketDataService {
       //10
       marketId = ID_PREFIX + ++marketIdNumber;
       marketIdToMarketModelMap.put(marketId, new Market(marketId, "Sugar", 148.0));
-
    }
 }

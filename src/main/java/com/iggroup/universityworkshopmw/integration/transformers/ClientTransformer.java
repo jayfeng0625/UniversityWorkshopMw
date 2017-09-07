@@ -15,4 +15,12 @@ public class ClientTransformer {
          .build();
    }
 
+   public static ClientDto clientModelToClientDto(Client client) {
+      return new ClientDto(
+            client.getClientId(),
+            client.getUserName(),
+            client.getProfitAndLoss()
+      );
+   }
+
 }

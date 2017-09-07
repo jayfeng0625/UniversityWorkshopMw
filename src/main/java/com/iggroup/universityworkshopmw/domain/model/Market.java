@@ -16,8 +16,4 @@ public class Market {
       this.marketName = marketName;
       this.currentPrice = currentPrice;
    }
-
-   public void setCurrentPrice(Double currentPrice) {
-      this.currentPrice = currentPrice;
-   }
 }
