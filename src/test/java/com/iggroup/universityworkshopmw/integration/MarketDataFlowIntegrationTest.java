@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// TODO: 04/09/2017 Test the updating of prices. Ensure it doesn't effect current tests.
 public class MarketDataFlowIntegrationTest {
 
    //Given
