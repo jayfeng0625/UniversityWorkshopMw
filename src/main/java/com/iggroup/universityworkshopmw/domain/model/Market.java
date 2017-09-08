@@ -3,18 +3,16 @@ package com.iggroup.universityworkshopmw.domain.model;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 @ToString
 @Getter
 @EqualsAndHashCode
 @Builder
-public class Client {
+public class Market {
 
-   private String clientId;
-   private String userName;
-   @Setter
-   private double profitAndLoss;
+   private String marketId;
+   private String marketName;
+   private Double currentPrice;
 
 }
