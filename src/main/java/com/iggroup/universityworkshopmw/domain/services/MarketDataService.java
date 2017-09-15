@@ -1,15 +1,14 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
+import com.iggroup.universityworkshopmw.domain.enums.MarketName;
 import com.iggroup.universityworkshopmw.domain.model.Market;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.iggroup.universityworkshopmw.domain.enums.MarketName.*;
 
@@ -48,78 +47,17 @@ public class MarketDataService {
    }
 
    private void initialiseMarketModelMap() {
-      String marketId;
-      int marketIdNumber = 0;
+      IntStream.range(0, MarketName.values().length)
+         .forEach(idx -> {
+            String marketId = ID_PREFIX + (idx + 1);
+            MarketName marketName = MarketName.values()[idx];
+            Double startingPrice = marketName.getStartingPrice();
 
-      //1
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(GOLD)
-            .currentPrice(500.9)
-            .build());
-      //2
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(SILVER)
-            .currentPrice(375.2)
-            .build());
-      //3
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(PLATINUM)
-            .currentPrice(312.0)
-            .build());
-      //4
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(COPPER)
-            .currentPrice(250.0)
-            .build());
-      //5
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(NATURAL_GAS)
-            .currentPrice(300.7)
-            .build());
-      //6
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(COFFEE)
-            .currentPrice(205.0)
-            .build());
-      //7
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(WHEAT)
-            .currentPrice(175.4)
-            .build());
-      //8
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(COCOA)
-            .currentPrice(225.1)
-            .build());
-      //9
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(COTTON)
-            .currentPrice(125.0)
-            .build());
-      //10
-      marketId = ID_PREFIX + ++marketIdNumber;
-      marketIdToMarketModelMap.put(marketId, Market.builder()
-            .marketId(marketId)
-            .marketName(SUGAR)
-            .currentPrice(148.0)
-            .build());
+            marketIdToMarketModelMap.put(marketId, Market.builder()
+               .marketId(marketId)
+               .marketName(marketName)
+               .currentPrice(startingPrice)
+               .build());
+         });
    }
 }
