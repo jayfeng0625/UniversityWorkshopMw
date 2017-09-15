@@ -2,6 +2,7 @@ package com.iggroup.universityworkshopmw.domain.services;
 
 import com.iggroup.universityworkshopmw.domain.model.Market;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,6 +15,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class MarketDataService {
+
+   @Autowired
+   private OpenPositionsService openPositionsService;
 
    private Map<String, Market> marketIdToMarketModelMap = new ConcurrentHashMap<>();
    private final String ID_PREFIX = "market_";
@@ -37,6 +41,7 @@ public class MarketDataService {
 
    void updateMarket(Market market) {
       marketIdToMarketModelMap.put(market.getMarketId(), market);
+      openPositionsService.updateMarketValue(market.getMarketId(), market.getCurrentPrice());
    }
 
    List<Map.Entry<String, Market>> getShuffledMapSubset() {

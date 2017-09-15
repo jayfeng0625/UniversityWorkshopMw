@@ -1,6 +1,6 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
-import com.iggroup.universityworkshopmw.domain.Helper;
+import com.iggroup.universityworkshopmw.domain.helpers.Helper;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import lombok.extern.slf4j.Slf4j;

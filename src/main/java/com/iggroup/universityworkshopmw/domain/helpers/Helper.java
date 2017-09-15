@@ -1,4 +1,4 @@
-package com.iggroup.universityworkshopmw.domain;
+package com.iggroup.universityworkshopmw.domain.helpers;
 
 import java.util.UUID;
 
