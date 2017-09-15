@@ -15,31 +15,31 @@ public class ClientService {
 
    private Map<String, Client> clientIdToClientModelMap = new ConcurrentHashMap<>();
    private final String ID_PREFIX = "client_";
-   private final double INITIAL_PROFIT_LOSS = 10000; //10,000
+   private final double INITIAL_FUNDS = 10000;
 
    public Client storeNewClient(Client client) {
       String uniqueId = Helper.createUniqueId(ID_PREFIX);
       Client enrichedClient = Client.builder()
          .clientId(uniqueId)
          .userName(client.getUserName())
-         .profitAndLoss(INITIAL_PROFIT_LOSS)
+         .funds(INITIAL_FUNDS)
          .build();
       clientIdToClientModelMap.put(uniqueId, enrichedClient);
       log.info("Added new client={}", enrichedClient);
       return enrichedClient;
    }
 
-   public double getProfitAndLoss(String clientId) throws NoAvailableDataException {
+   public double getFunds(String clientId) throws NoAvailableDataException {
       Client client = getClientDataFromMap(clientId);
-      double profitAndLoss = client.getProfitAndLoss();
-      log.info("Retrieving profitAndLoss={} for clientId={}", profitAndLoss, clientId);
-      return profitAndLoss;
+      double funds = client.getFunds();
+      log.info("Retrieving funds={} for clientId={}", funds, clientId);
+      return funds;
    }
 
-   protected void updateProfitAndLoss(String clientId, double updatedProfitAndLoss) throws NoAvailableDataException {
+   protected void updateFunds(String clientId, double updatedFunds) throws NoAvailableDataException {
       Client client = getClientDataFromMap(clientId);
-      log.info("Updating updatedProfitAndLoss for clientId={}, oldProfitAndLoss={}, updatedProfitAndLoss={}", clientId, client.getProfitAndLoss(), updatedProfitAndLoss);
-      client.setProfitAndLoss(updatedProfitAndLoss);
+      log.info("Updating updatedFunds for clientId={}, oldFunds={}, updatedFunds={}", clientId, client.getFunds(), updatedFunds);
+      client.setFunds(updatedFunds);
       clientIdToClientModelMap.put(clientId, client);
    }
 

@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.iggroup.universityworkshopmw.domain.enums.MarketName.SILVER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MarketDataTransformerTest {
@@ -16,7 +17,7 @@ public class MarketDataTransformerTest {
       List<Market> listOfMarkets = new ArrayList<>();
       listOfMarkets.add(Market.builder()
             .marketId("market_1")
-            .marketName("commodity1")
+            .marketName(SILVER)
             .currentPrice(100.0)
             .build());
 
@@ -24,7 +25,7 @@ public class MarketDataTransformerTest {
 
       assertThat(marketDtos.size()).isEqualTo(1);
       assertThat(marketDtos.get(0).getMarketId()).isEqualTo("market_1");
-      assertThat(marketDtos.get(0).getMarketName()).isEqualTo("commodity1");
+      assertThat(marketDtos.get(0).getMarketName()).isEqualTo(SILVER.getMarketName());
       assertThat(marketDtos.get(0).getCurrentPrice()).isEqualTo(100.0);
    }
 }
