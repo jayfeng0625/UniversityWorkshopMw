@@ -18,6 +18,6 @@ public enum MarketName {
    COTTON("Cotton", 125.0),
    SUGAR("Sugar", 148.0);
 
-   private final String marketName;
+   private final String name;
    private final Double startingPrice;
 }

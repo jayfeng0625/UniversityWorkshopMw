@@ -25,7 +25,7 @@ public class MarketDataTransformerTest {
 
       assertThat(marketDtos.size()).isEqualTo(1);
       assertThat(marketDtos.get(0).getMarketId()).isEqualTo("market_1");
-      assertThat(marketDtos.get(0).getMarketName()).isEqualTo(SILVER.getMarketName());
+      assertThat(marketDtos.get(0).getMarketName()).isEqualTo(SILVER.getName());
       assertThat(marketDtos.get(0).getCurrentPrice()).isEqualTo(100.0);
    }
 }

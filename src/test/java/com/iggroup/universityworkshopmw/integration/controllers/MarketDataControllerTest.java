@@ -55,7 +55,7 @@ public class MarketDataControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.[0].marketId", is("market_1")))
-            .andExpect(jsonPath("$.[0].marketName", is(GOLD.getMarketName())))
+            .andExpect(jsonPath("$.[0].marketName", is(GOLD.getName())))
             .andExpect(jsonPath("$.[0].currentPrice", is(400.0)));
    }
 

@@ -31,7 +31,7 @@ public class MarketDataFlowIntegrationTest {
             .andExpect(content().contentType(TestHelper.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", hasSize(10)))
             .andExpect(jsonPath("$.[0].marketId", is("market_10")))
-            .andExpect(jsonPath("$.[0].marketName", is(SUGAR.getMarketName())))
+            .andExpect(jsonPath("$.[0].marketName", is(SUGAR.getName())))
             .andExpect(jsonPath("$.[0].currentPrice", is(148.0)));
 
       //When
