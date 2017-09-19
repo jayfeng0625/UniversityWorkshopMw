@@ -14,6 +14,6 @@ public class Market {
 
    private String marketId;
    private MarketName marketName;
-   private Double currentPrice;
+   private double currentPrice;
 
 }
