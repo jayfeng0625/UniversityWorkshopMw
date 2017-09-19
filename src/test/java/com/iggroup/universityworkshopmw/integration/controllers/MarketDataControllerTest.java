@@ -42,7 +42,7 @@ public class MarketDataControllerTest {
       //Given
       List<Market> listOfMarkets = new ArrayList<>();
       listOfMarkets.add(Market.builder()
-            .marketId("market_1")
+            .id("market_1")
             .marketName("marketName1")
             .currentPrice(400.0)
             .build());
@@ -53,7 +53,7 @@ public class MarketDataControllerTest {
             //Then
             .andExpect(status().isOk())
             .andExpect(content().contentType(TestHelper.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.[0].marketId", is("market_1")))
+            .andExpect(jsonPath("$.[0].id", is("market_1")))
             .andExpect(jsonPath("$.[0].marketName", is("marketName1")))
             .andExpect(jsonPath("$.[0].currentPrice", is(400.0)));
    }

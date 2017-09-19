@@ -9,7 +9,7 @@ public class ClientTransformer {
       Double profitAndLoss = clientDto.getProfitAndLoss();
       Double safeProfitAndLoss = new Double( null == profitAndLoss ? "0" : profitAndLoss.toString() );
       return Client.builder()
-         .clientId(clientDto.getClientId())
+         .id(clientDto.getId())
          .userName(clientDto.getUserName())
          .profitAndLoss(safeProfitAndLoss)
          .build();

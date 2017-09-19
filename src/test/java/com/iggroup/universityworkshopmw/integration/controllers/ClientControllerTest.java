@@ -48,12 +48,12 @@ public class ClientControllerTest {
    @Test
    public void createClient_returnsOkCodeAndClientIdAndProfitAndLoss() throws Exception {
       ClientDto clientDto = ClientDto.builder()
-         .clientId(null)
+         .id(null)
          .userName("userName")
          .profitAndLoss(null)
          .build();
       Client clientAdded = Client.builder()
-         .clientId("client_12345")
+         .id("client_12345")
          .userName("username")
          .profitAndLoss(400)
          .build();
@@ -65,7 +65,7 @@ public class ClientControllerTest {
       )
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.clientId", is("client_12345")))
+            .andExpect(jsonPath("$.id", is("client_12345")))
             .andExpect(jsonPath("$.profitAndLoss", is(400.0)));
 
       ArgumentCaptor<Client> clientArgumentCaptor = forClass(Client.class);
@@ -73,7 +73,7 @@ public class ClientControllerTest {
       verifyNoMoreInteractions(clientService);
 
       Client client = clientArgumentCaptor.getValue();
-      assertNull(client.getClientId());
+      assertNull(client.getId());
       assertThat(client.getProfitAndLoss(), is(0.0));
       assertThat(client.getUserName(), is("userName"));
    }
@@ -81,7 +81,7 @@ public class ClientControllerTest {
    @Test
    public void createClient_handlesAnyException_returnsServerErrorAndInfoString() throws Exception {
       ClientDto clientDto = ClientDto.builder()
-         .clientId(null)
+         .id(null)
          .userName("userName")
          .profitAndLoss(null)
          .build();
@@ -111,8 +111,8 @@ public class ClientControllerTest {
       verify(clientService, times(1)).getProfitAndLoss(clientIdCaptor.capture());
       verifyNoMoreInteractions(clientService);
 
-      String clientId = clientIdCaptor.getValue();
-      assertThat(clientId, is("client_12345"));
+      String id = clientIdCaptor.getValue();
+      assertThat(id, is("client_12345"));
    }
 
    @Test

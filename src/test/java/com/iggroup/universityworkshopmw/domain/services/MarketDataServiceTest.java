@@ -8,15 +8,18 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class MarketDataServiceTest {
 
    private MarketDataService marketDataService;
+   private OpenPositionsService openPositionsService;
 
    @Before
    public void setup() {
       //Given
-      marketDataService = new MarketDataService();
+      openPositionsService = mock(OpenPositionsService.class);
+      marketDataService = new MarketDataService(openPositionsService);
    }
 
    @Test
@@ -27,7 +30,7 @@ public class MarketDataServiceTest {
       //Then
       assertThat(allMarkets.size()).isEqualTo(10);
       assertThat(allMarkets).extracting(Market::getMarketName).containsOnly("Gold", "Silver", "Platinum", "Copper", "Natural Gas", "Coffee", "Wheat", "Cocoa", "Cotton", "Sugar");
-      assertThat(allMarkets).extracting(Market::getMarketId).containsOnly("market_1", "market_2", "market_3", "market_4", "market_5", "market_6", "market_7", "market_8", "market_9", "market_10");
+      assertThat(allMarkets).extracting(Market::getId).containsOnly("market_1", "market_2", "market_3", "market_4", "market_5", "market_6", "market_7", "market_8", "market_9", "market_10");
    }
 
    @Test
@@ -46,7 +49,7 @@ public class MarketDataServiceTest {
       //Given
       Market aRandomMarketFromMap = marketDataService.getAllMarkets().get(0);
       Market updatedMarket = Market.builder()
-            .marketId(aRandomMarketFromMap.getMarketId())
+            .id(aRandomMarketFromMap.getId())
             .marketName("marketName")
             .currentPrice(123.1)
             .build();

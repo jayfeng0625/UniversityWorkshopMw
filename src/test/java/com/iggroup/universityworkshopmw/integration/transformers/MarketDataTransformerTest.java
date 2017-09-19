@@ -15,7 +15,7 @@ public class MarketDataTransformerTest {
    public void transformMarketListToMarketDtoList_returnsListOfMarketDtos() {
       List<Market> listOfMarkets = new ArrayList<>();
       listOfMarkets.add(Market.builder()
-            .marketId("market_1")
+            .id("market_1")
             .marketName("commodity1")
             .currentPrice(100.0)
             .build());
@@ -23,7 +23,7 @@ public class MarketDataTransformerTest {
       List<MarketDto> marketDtos = MarketDataTransformer.transform(listOfMarkets);
 
       assertThat(marketDtos.size()).isEqualTo(1);
-      assertThat(marketDtos.get(0).getMarketId()).isEqualTo("market_1");
+      assertThat(marketDtos.get(0).getId()).isEqualTo("market_1");
       assertThat(marketDtos.get(0).getMarketName()).isEqualTo("commodity1");
       assertThat(marketDtos.get(0).getCurrentPrice()).isEqualTo(100.0);
    }

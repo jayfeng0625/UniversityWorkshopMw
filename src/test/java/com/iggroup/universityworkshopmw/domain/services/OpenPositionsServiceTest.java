@@ -1,9 +1,14 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
+import com.iggroup.universityworkshopmw.domain.exceptions.InsufficientFundsException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
+import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
@@ -11,15 +16,19 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class OpenPositionsServiceTest {
 
    private OpenPosition openPosition1, openPosition2, openPosition3, openPosition4, openPosition5, openPosition6;
    private OpenPositionsService openPositionsService;
+   private ClientService clientService;
 
    @Before
    public void setUp() {
-      openPositionsService = new OpenPositionsService();
+      clientService = mock(ClientService.class);
+      openPositionsService = new OpenPositionsService(clientService);
       initialiseOpenPositions();
    }
 
@@ -40,6 +49,8 @@ public class OpenPositionsServiceTest {
 
    @Test
    public void shouldAddOpenPositionsForClientWithNoPositions() throws Exception {
+      when(clientService.getClientDataFromMap("client_1")).thenReturn(createClient("client_1"));
+
       openPositionsService.addOpenPositionForClient("client_1", openPosition1);
 
       assertEquals(openPositionsService.getOpenPositionsForClient("client_1"), asList(openPosition1));
@@ -47,6 +58,8 @@ public class OpenPositionsServiceTest {
 
    @Test
    public void shouldAddNewPositionForClientWithExistingPositions() throws Exception {
+      when(clientService.getClientDataFromMap("client_3")).thenReturn(createClient("client_3"));
+
       openPositionsService.addOpenPositionForClient("client_3", openPosition1);
       openPositionsService.addOpenPositionForClient("client_3", openPosition4);
 
@@ -118,6 +131,17 @@ public class OpenPositionsServiceTest {
       assertTrue(openPositions.contains(openPosition2));
    }
 
+   @Test(expected = InsufficientFundsException.class)
+   public void shouldThrowExceptionIfClientLacksFundsToTrade() throws Exception {
+      when(clientService.getClientDataFromMap("client_1")).thenReturn(Client.builder()
+         .id("client_1")
+         .userName("username")
+         .profitAndLoss(1)
+         .build());
+
+      openPositionsService.addOpenPositionForClient("client_1", openPosition1);
+   }
+
    private void initialiseOpenPositions() {
       openPosition1 = OpenPosition.builder()
          .id("pos_1")
@@ -168,15 +192,44 @@ public class OpenPositionsServiceTest {
          .build();
    }
 
-   private void initialiseClientPositions() {
+   private void initialiseClientPositions() throws Exception {
+      when(clientService.getClientDataFromMap("client_1")).thenReturn(createClient("client_1"));
+      when(clientService.getClientDataFromMap("client_2")).thenReturn(createClient("client_2"));
+      when(clientService.getClientDataFromMap("client_3")).thenReturn(createClient("client_3"));
       newArrayList(openPosition1, openPosition2).stream()
-         .forEach(openPosition -> openPositionsService.addOpenPositionForClient("client_1", openPosition));
+         .forEach(openPosition -> {
+            try {
+               openPositionsService.addOpenPositionForClient("client_1", openPosition);
+            } catch (NoAvailableDataException e) {
+               e.printStackTrace();
+            }
+         });
 
       newArrayList(openPosition3, openPosition2, openPosition5).stream()
-         .forEach(openPosition -> openPositionsService.addOpenPositionForClient("client_2", openPosition));
+         .forEach(openPosition -> {
+            try {
+               openPositionsService.addOpenPositionForClient("client_2", openPosition);
+            } catch (NoAvailableDataException e) {
+               e.printStackTrace();
+            }
+         });
 
       newArrayList(openPosition4).stream()
-         .forEach(openPosition -> openPositionsService.addOpenPositionForClient("client_3", openPosition));
+         .forEach(openPosition -> {
+            try {
+               openPositionsService.addOpenPositionForClient("client_3", openPosition);
+            } catch (NoAvailableDataException e) {
+               e.printStackTrace();
+            }
+         });
+   }
+
+   private Client createClient(String clientId) {
+      return Client.builder()
+         .id(clientId)
+         .userName("username")
+         .profitAndLoss(12345)
+         .build();
    }
 
 }

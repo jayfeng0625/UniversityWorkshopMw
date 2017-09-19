@@ -1,23 +1,28 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
+import com.iggroup.universityworkshopmw.domain.exceptions.InsufficientFundsException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
+import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.collect.Lists.newArrayList;
 
 @Slf4j
 @Component
 public class OpenPositionsService {
-   private Map<String, List<OpenPosition>> clientPositionStore;
+   private final ClientService clientService;
+   private ConcurrentMap<String, List<OpenPosition>> clientPositionStore;
 
-   public OpenPositionsService() {
-      clientPositionStore = new HashMap<>();
+   public OpenPositionsService(ClientService clientService) {
+      this.clientService = clientService;
+      clientPositionStore = new ConcurrentHashMap<>();
+
    }
 
    public List<OpenPosition> getOpenPositionsForClient(String clientId) throws NoAvailableDataException {
@@ -29,13 +34,14 @@ public class OpenPositionsService {
       throw new NoAvailableDataException("No open positions exist for client: " + clientId);
    }
 
-   public void addOpenPositionForClient(String clientId, OpenPosition openPosition) {
-      List<OpenPosition> openPositions = clientPositionStore.get(clientId);
-      if (openPositions != null) {
-         openPositions.add(openPosition);
-      } else {
-         clientPositionStore.put(clientId, newArrayList(openPosition));
-      }
+   public void addOpenPositionForClient(String clientId, OpenPosition newOpenPosition) throws NoAvailableDataException, InsufficientFundsException {
+      double positionPrice = newOpenPosition.getBuySize() * newOpenPosition.getOpeningPrice();
+      List<OpenPosition> openPositionsForClient = clientPositionStore.get(clientId);
+
+      double clientFunds = checkClientFunds(clientId, positionPrice);
+      updateStoreWithNewPosition(clientId, newOpenPosition, openPositionsForClient);
+
+      clientService.updateProfitAndLoss(clientId, clientFunds);
    }
 
    public Double closeOpenPosition(String clientId, String openPosition, Double closingPrice) throws NoAvailableDataException {
@@ -84,5 +90,22 @@ public class OpenPositionsService {
 
    private Double getNewProfitAndLoss(Double newValue, Double openingPrice, Integer buySize) {
       return (newValue - openingPrice) * buySize;
+   }
+
+   private double checkClientFunds(String clientId, double positionPrice) throws NoAvailableDataException {
+      Client client = clientService.getClientDataFromMap(clientId);
+
+      if (client.getProfitAndLoss() < positionPrice) {
+         throw new InsufficientFundsException("Client: " + clientId + " lacks sufficient funds to place that trade");
+      }
+      return client.getProfitAndLoss();
+   }
+
+   private void updateStoreWithNewPosition(String clientId, OpenPosition newOpenPosition, List<OpenPosition> openPositionsForClient) {
+      if (openPositionsForClient != null) {
+         openPositionsForClient.add(newOpenPosition);
+      } else {
+         clientPositionStore.put(clientId, newArrayList(newOpenPosition));
+      }
    }
 }

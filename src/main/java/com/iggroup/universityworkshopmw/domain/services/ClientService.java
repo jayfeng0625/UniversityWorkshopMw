@@ -20,7 +20,7 @@ public class ClientService {
    public Client storeNewClient(Client client) {
       String uniqueId = Helper.createUniqueId(ID_PREFIX);
       Client enrichedClient = Client.builder()
-         .clientId(uniqueId)
+         .id(uniqueId)
          .userName(client.getUserName())
          .profitAndLoss(INITIAL_PROFIT_LOSS)
          .build();
@@ -36,14 +36,14 @@ public class ClientService {
       return profitAndLoss;
    }
 
-   protected void updateProfitAndLoss(String clientId, double updatedProfitAndLoss) throws NoAvailableDataException {
+   public void updateProfitAndLoss(String clientId, double updatedProfitAndLoss) throws NoAvailableDataException {
       Client client = getClientDataFromMap(clientId);
       log.info("Updating updatedProfitAndLoss for clientId={}, oldProfitAndLoss={}, updatedProfitAndLoss={}", clientId, client.getProfitAndLoss(), updatedProfitAndLoss);
       client.setProfitAndLoss(updatedProfitAndLoss);
       clientIdToClientModelMap.put(clientId, client);
    }
 
-   private Client getClientDataFromMap(String clientId) throws NoAvailableDataException {
+   Client getClientDataFromMap(String clientId) throws NoAvailableDataException {
       if (clientIdToClientModelMap.containsKey(clientId)) {
          return clientIdToClientModelMap.get(clientId);
       } else {

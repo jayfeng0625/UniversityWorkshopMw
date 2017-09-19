@@ -30,19 +30,19 @@ public class PriceGeneratorService {
 
       updateSubList.stream().forEach(entry -> {
          Market entryValue = entry.getValue();
-         String marketId = entryValue.getMarketId();
+         String id = entryValue.getId();
          Double oldPrice = entryValue.getCurrentPrice();
 
          double newMarketPrice = generateNewMarketPrice(oldPrice);
          marketDataService.updateMarket(Market.builder()
-               .marketId(marketId)
+               .id(id)
                .marketName(entryValue.getMarketName())
                .currentPrice(newMarketPrice)
                .build()
          );
-         marketIdsUpdated.add(marketId);
+         marketIdsUpdated.add(id);
 
-         log.info("Updated market price for marketId={}, oldPrice={}, newPrice={}, normalDist={}", marketId, oldPrice, newMarketPrice, (newMarketPrice - oldPrice));
+         log.info("Updated market price for id={}, oldPrice={}, newPrice={}, normalDist={}", id, oldPrice, newMarketPrice, (newMarketPrice - oldPrice));
       });
 
    }

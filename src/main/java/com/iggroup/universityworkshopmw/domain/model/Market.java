@@ -11,7 +11,7 @@ import lombok.ToString;
 @Builder
 public class Market {
 
-   private String marketId;
+   private String id;
    private String marketName;
    private Double currentPrice;
 

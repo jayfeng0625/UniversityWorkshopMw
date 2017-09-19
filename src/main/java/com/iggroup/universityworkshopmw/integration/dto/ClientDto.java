@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ClientDto {
 
-   private String clientId;
+   private String id;
    private String userName;
    private Double profitAndLoss;
 

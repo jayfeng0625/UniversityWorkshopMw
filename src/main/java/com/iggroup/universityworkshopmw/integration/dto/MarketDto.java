@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class MarketDto {
 
-   private String marketId;
+   private String id;
    private String marketName;
    private Double currentPrice;
 
