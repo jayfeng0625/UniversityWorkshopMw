@@ -1,6 +1,5 @@
 package com.iggroup.universityworkshopmw.integration.controllers;
 
-import com.iggroup.universityworkshopmw.TestHelper;
 import com.iggroup.universityworkshopmw.domain.model.Market;
 import com.iggroup.universityworkshopmw.domain.services.MarketDataService;
 import org.junit.Before;
@@ -14,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.iggroup.universityworkshopmw.TestHelper.APPLICATION_JSON_UTF8;
+import static com.iggroup.universityworkshopmw.domain.enums.MarketName.GOLD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
@@ -43,7 +44,7 @@ public class MarketDataControllerTest {
       List<Market> listOfMarkets = new ArrayList<>();
       listOfMarkets.add(Market.builder()
             .marketId("market_1")
-            .marketName("marketName1")
+            .marketName(GOLD)
             .currentPrice(400.0)
             .build());
       when(marketDataService.getAllMarkets()).thenReturn(listOfMarkets);
@@ -52,9 +53,9 @@ public class MarketDataControllerTest {
       mockMvc.perform(get("/marketData/allMarkets"))
             //Then
             .andExpect(status().isOk())
-            .andExpect(content().contentType(TestHelper.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.[0].marketId", is("market_1")))
-            .andExpect(jsonPath("$.[0].marketName", is("marketName1")))
+            .andExpect(jsonPath("$.[0].marketName", is(GOLD.getName())))
             .andExpect(jsonPath("$.[0].currentPrice", is(400.0)));
    }
 
@@ -84,7 +85,7 @@ public class MarketDataControllerTest {
       mockMvc.perform(get("/marketData/allPrices"))
             //Then
             .andExpect(status().isOk())
-            .andExpect(content().contentType(TestHelper.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.market_1", is(400.0)));
    }
 
