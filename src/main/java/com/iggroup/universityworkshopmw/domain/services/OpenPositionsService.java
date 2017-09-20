@@ -35,14 +35,15 @@ public class OpenPositionsService {
       throw new NoAvailableDataException("No open positions exist for client: " + clientId);
    }
 
-   public void addOpenPositionForClient(String clientId, OpenPosition newOpenPosition) throws NoAvailableDataException, InsufficientFundsException {
+   public OpenPosition addOpenPositionForClient(String clientId, OpenPosition newOpenPosition) throws NoAvailableDataException, InsufficientFundsException {
       double positionPrice = newOpenPosition.getBuySize() * newOpenPosition.getOpeningPrice();
       List<OpenPosition> openPositionsForClient = clientPositionStore.get(clientId);
 
       double clientFunds = checkClientFunds(clientId, positionPrice);
-      updateStoreWithNewPosition(clientId, newOpenPosition, openPositionsForClient);
+      OpenPosition openPositionWithId = updateStoreWithNewPosition(clientId, newOpenPosition, openPositionsForClient);
 
       clientService.updateFunds(clientId, clientFunds);
+      return openPositionWithId;
    }
 
    public Double closeOpenPosition(String clientId, String openPositionToClose, Double closingPrice) throws NoAvailableDataException {
@@ -69,15 +70,14 @@ public class OpenPositionsService {
          .forEach(client -> {
             List<OpenPosition> openPositions = clientPositionStore.get(client);
             openPositions.stream()
-               .forEach(openPosition -> updateProfitAndLoss(marketId, newValue, openPosition, openPositions));
+               .filter(openPosition -> openPosition.getMarketId().equals(marketId))
+               .forEach(openPosition -> updateProfitAndLoss(newValue, openPosition, openPositions));
          });
    }
 
-   private void updateProfitAndLoss(String marketId, Double newValue, OpenPosition openPosition, List<OpenPosition> openPositions) {
-      if (openPosition.getMarketId().equals(marketId)) {
-         Double newProfitAndLoss = calculateNewProfitAndLoss(newValue, openPosition.getOpeningPrice(), openPosition.getBuySize());
-         openPositions.set(openPositions.indexOf(openPosition), createNewPosition(openPosition, newProfitAndLoss, false));
-      }
+   private void updateProfitAndLoss(Double newValue, OpenPosition openPosition, List<OpenPosition> openPositions) {
+      Double newProfitAndLoss = calculateNewProfitAndLoss(newValue, openPosition.getOpeningPrice(), openPosition.getBuySize());
+      openPositions.set(openPositions.indexOf(openPosition), createNewPosition(openPosition, newProfitAndLoss, false));
    }
 
    private OpenPosition createNewPosition(OpenPosition openPosition, Double profitAndLoss, boolean generateId) {
@@ -96,7 +96,7 @@ public class OpenPositionsService {
       return (newValue - openingPrice) * buySize;
    }
 
-   private double checkClientFunds(String clientId, double positionPrice) throws NoAvailableDataException {
+   private double checkClientFunds(String clientId, double positionPrice) throws NoAvailableDataException, InsufficientFundsException {
       Client client = clientService.getClientDataFromMap(clientId);
 
       if (client.getFunds() < positionPrice) {
@@ -105,12 +105,14 @@ public class OpenPositionsService {
       return client.getFunds();
    }
 
-   private void updateStoreWithNewPosition(String clientId, OpenPosition newOpenPosition, List<OpenPosition> openPositionsForClient) {
+   private OpenPosition updateStoreWithNewPosition(String clientId, OpenPosition newOpenPosition, List<OpenPosition> openPositionsForClient) {
+      OpenPosition openPosition = createNewPosition(newOpenPosition, newOpenPosition.getProfitAndLoss(), true);
       if (openPositionsForClient != null) {
-         openPositionsForClient.add(createNewPosition(newOpenPosition, newOpenPosition.getProfitAndLoss(), true));
+         openPositionsForClient.add(openPosition);
       } else {
-         clientPositionStore.put(clientId, newArrayList(createNewPosition(newOpenPosition, newOpenPosition.getProfitAndLoss(), true)));
+         clientPositionStore.put(clientId, newArrayList(openPosition));
       }
+      return openPosition;
    }
 
    private List<OpenPosition> getPositionDataFromMap(String clientId) throws NoAvailableDataException {

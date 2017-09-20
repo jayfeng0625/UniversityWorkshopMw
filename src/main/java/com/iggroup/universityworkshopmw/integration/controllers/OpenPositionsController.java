@@ -14,8 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
@@ -56,8 +59,11 @@ public class OpenPositionsController {
                                             @RequestBody OpenPositionDto openPositionDto) {
       try {
          OpenPosition openPosition = OpenPositionTransformer.transform(openPositionDto);
-         openPositionsService.addOpenPositionForClient(clientId, openPosition);
-         return new ResponseEntity<>("Successfully added open position", OK);
+         OpenPosition openPositionWithId = openPositionsService.addOpenPositionForClient(clientId, openPosition);
+         Map<String, String> headers = newHashMap();
+         headers.put("openPositionId", openPositionWithId.getId());
+
+         return new ResponseEntity<>(headers, OK);
       } catch (InsufficientFundsException e) {
          log.info("Client={} lacked sufficient funds to trade, ", clientId, e);
          return new ResponseEntity<>("Client: " + clientId + " lacked sufficient funds to trade", BAD_REQUEST);

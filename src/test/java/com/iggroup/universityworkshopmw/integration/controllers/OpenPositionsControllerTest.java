@@ -1,13 +1,12 @@
 package com.iggroup.universityworkshopmw.integration.controllers;
 
-import com.iggroup.universityworkshopmw.TestHelper;
+import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
 import com.iggroup.universityworkshopmw.domain.services.OpenPositionsService;
 import com.iggroup.universityworkshopmw.integration.dto.OpenPositionDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -17,6 +16,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.iggroup.universityworkshopmw.TestHelper.APPLICATION_JSON_UTF8;
 import static com.iggroup.universityworkshopmw.TestHelper.convertObjectToJsonBytes;
+import static com.iggroup.universityworkshopmw.integration.transformers.OpenPositionTransformer.transform;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class OpenPositionsControllerTest {
@@ -78,6 +78,9 @@ public class OpenPositionsControllerTest {
    @Test
    public void createsAnOpenPosition() throws Exception {
       OpenPositionDto openPositionDto = createOpenPositionDto();
+      OpenPosition openPosition = transform(openPositionDto);
+      when(openPositionsService.addOpenPositionForClient(eq("client_12345"), any(OpenPosition.class)))
+         .thenReturn(openPosition);
 
       mockMvc.perform(post("/openPositions/client_12345")
          .contentType(APPLICATION_JSON_UTF8)
@@ -86,6 +89,7 @@ public class OpenPositionsControllerTest {
          .andExpect(status().isOk())
          .andExpect(content().contentType(APPLICATION_JSON_UTF8))
          .andReturn();
+
    }
 
    @Test
