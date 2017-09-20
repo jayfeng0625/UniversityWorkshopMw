@@ -11,7 +11,7 @@ public class MarketDataTransformer {
       return listOfMarkets.stream()
             .map(market -> MarketDto.builder()
                   .id(market.getId())
-                  .marketName(market.getMarketName())
+                  .marketName(market.getMarketName().getName())
                   .currentPrice(market.getCurrentPrice())
                   .build())
             .collect(Collectors.toList());

@@ -36,7 +36,7 @@ public class OpenPositionsController {
    public ResponseEntity<?> getOpenPositions(@PathVariable("clientId") String clientId) {
       try {
          List<OpenPosition> openPositions = openPositionsService.getOpenPositionsForClient(clientId);
-         List<OpenPositionDto> responseBody = openPositions != null ? OpenPositionDtoTransformer.transform(openPositions) : null;
+         List<OpenPositionDto> responseBody = OpenPositionDtoTransformer.transform(openPositions);
 
          return new ResponseEntity<>(responseBody, OK);
       } catch (NoAvailableDataException e) {
@@ -62,8 +62,8 @@ public class OpenPositionsController {
          log.info("Client={} lacked sufficient funds to trade, ", clientId, e);
          return new ResponseEntity<>("Client: " + clientId + " lacked sufficient funds to trade", BAD_REQUEST);
       } catch (NoAvailableDataException e) {
-         log.info("Could not update funds for client={}, ", clientId, e);
-         return new ResponseEntity<>("Could not update funds for clientId: " + clientId, BAD_REQUEST);
+         log.info("Could not open position for client={}, ", clientId, e);
+         return new ResponseEntity<>("Could not open position for clientId: " + clientId, BAD_REQUEST);
       } catch (Exception e) {
          log.info("Could not add an open position for client={}, ", clientId, e);
          return new ResponseEntity<>("Something went wrong when opening a position", INTERNAL_SERVER_ERROR);

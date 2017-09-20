@@ -55,44 +55,44 @@ public class ClientFlowIntegrationTest {
       ClientDto clientDto = ClientDto.builder()
          .id(null)
          .userName("userName")
-         .profitAndLoss(null)
+         .funds(null)
          .build();
 
       String clientId = mockCreateClient(clientDto);
       assertClient();
-      String content = mockGetProfitAndLoss(clientId);
-      assertProfitAndLoss(clientId, content);
-      final String contentException = mockProfitAndLossException();
+      String content = mockGetFunds(clientId);
+      assertFunds(clientId, content);
+      final String contentException = mockFundsException();
 
       assertEquals("No available client data for clientId=client_12345", contentException);
    }
 
-   private String mockProfitAndLossException() throws Exception {
+   private String mockFundsException() throws Exception {
       MvcResult mvcResultException = mockMvc
-         .perform(get("/client/profitAndLoss/client_12345"))
+         .perform(get("/client/funds/client_12345"))
          .andExpect(status().isNotFound())
          .andReturn();
 
       return mvcResultException.getResponse().getContentAsString();
    }
 
-   private void assertProfitAndLoss(String clientId, String content) throws NoAvailableDataException {
+   private void assertFunds(String clientId, String content) throws NoAvailableDataException {
       assertEquals("10000.0", content);
 
       ArgumentCaptor<String> clientIdCaptor = ArgumentCaptor.forClass(String.class);
-      verify(clientService, times(1)).getProfitAndLoss(clientIdCaptor.capture());
+      verify(clientService, times(1)).getFunds(clientIdCaptor.capture());
 
       String capturedClientId = clientIdCaptor.getValue();
       assertThat(capturedClientId, is(clientId));
    }
 
-   private String mockGetProfitAndLoss(String clientId) throws Exception {
-      MvcResult mvcResultProfitAndLoss = mockMvc
-         .perform(get("/client/profitAndLoss/" + clientId))
+   private String mockGetFunds(String clientId) throws Exception {
+      MvcResult mvcResultFunds = mockMvc
+         .perform(get("/client/funds/" + clientId))
          .andExpect(status().isOk())
          .andReturn();
 
-      return mvcResultProfitAndLoss.getResponse().getContentAsString();
+      return mvcResultFunds.getResponse().getContentAsString();
    }
 
    private void assertClient() {
@@ -101,7 +101,7 @@ public class ClientFlowIntegrationTest {
       verifyNoMoreInteractions(clientService);
       Client client = clientArgumentCaptor.getValue();
       assertNull(client.getId());
-      assertThat(client.getProfitAndLoss(), is(0.0));
+      assertThat(client.getFunds(), is(0.0));
       assertThat(client.getUserName(), is("userName"));
    }
 
@@ -114,7 +114,7 @@ public class ClientFlowIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", containsString("client_")))
-            .andExpect(jsonPath("$.profitAndLoss", is(10000.0))).andReturn();
+            .andExpect(jsonPath("$.funds", is(10000.0))).andReturn();
 
       clientId = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.id");
       return clientId;

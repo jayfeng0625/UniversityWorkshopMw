@@ -12,13 +12,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static com.iggroup.universityworkshopmw.TestHelper.APPLICATION_JSON_UTF8;
 import static com.iggroup.universityworkshopmw.TestHelper.convertObjectToJsonBytes;
 import static com.iggroup.universityworkshopmw.integration.transformers.OpenPositionTransformer.transform;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
@@ -49,13 +47,13 @@ public class OpenPositionFlowIntegrationTest {
          .andReturn();
 
       verify(openPositionsService, times(1)).addOpenPositionForClient(client.getId(), transform(openPositionDto));
-      verify(clientService, times(1)).updateProfitAndLoss(client.getId(), 10000.00);
+      verify(clientService, times(1)).updateFunds(client.getId(), 10000.00);
    }
 
    private Client createClient() {
       return Client.builder()
          .id("client_1")
-         .profitAndLoss(10000)
+         .funds(10000)
          .userName("username")
          .build();
    }

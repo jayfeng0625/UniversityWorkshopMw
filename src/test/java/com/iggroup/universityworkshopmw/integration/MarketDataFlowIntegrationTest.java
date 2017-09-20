@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.iggroup.universityworkshopmw.domain.enums.MarketName.SUGAR;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.spy;
@@ -35,7 +36,7 @@ public class MarketDataFlowIntegrationTest {
             .andExpect(content().contentType(TestHelper.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", hasSize(10)))
             .andExpect(jsonPath("$.[0].id", is("market_10")))
-            .andExpect(jsonPath("$.[0].marketName", is("Sugar")))
+            .andExpect(jsonPath("$.[0].marketName", is(SUGAR.getName())))
             .andExpect(jsonPath("$.[0].currentPrice", is(148.0)));
 
       //When

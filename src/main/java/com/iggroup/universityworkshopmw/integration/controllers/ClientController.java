@@ -12,7 +12,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,29 +60,29 @@ public class ClientController {
       }
    }
 
-   @ApiOperation(value = "Get profit and loss",
-      notes = "Returns the profit and loss for a single client based on client Id")
+   @ApiOperation(value = "Get funds",
+      notes = "Returns the funds for a single client based on client Id")
    @ApiResponses(value = {
       @ApiResponse(code = HTTP_OK,
-         message = "Successfully retrieved profit and loss"),
+         message = "Successfully retrieved funds"),
       @ApiResponse(code = HTTP_BAD_REQUEST,
-         message = "Couldn't find profit and loss for client"),
+         message = "Couldn't find funds for client"),
       @ApiResponse(code = HTTP_BAD_GATEWAY,
-         message = "Couldn't retrieve profit and loss for client")
+         message = "Couldn't retrieve funds for client")
    })
-   @GetMapping("/profitAndLoss/{clientId}")
-   public ResponseEntity<?> getClientProfitAndLoss(@PathVariable("clientId") String clientId) {
+   @GetMapping("/funds/{clientId}")
+   public ResponseEntity<?> getClientFunds(@PathVariable("clientId") String clientId) {
       try {
-         double profitAndLoss = clientService.getProfitAndLoss(clientId);
-         return new ResponseEntity<>(profitAndLoss, OK);
+         double funds = clientService.getFunds(clientId);
+         return new ResponseEntity<>(funds, OK);
 
       } catch (NoAvailableDataException e) {
          log.info("No available client data in clientIdToClientModelMap for clientId={}", clientId);
          return new ResponseEntity<>("No available client data for clientId=" + clientId, NOT_FOUND);
 
       } catch (Exception e) {
-         log.info("Exception when retrieving profit and loss, exceptionMessage={}", e);
-         return new ResponseEntity<>("Something went wrong when retrieving profit and loss", INTERNAL_SERVER_ERROR);
+         log.info("Exception when retrieving funds, exceptionMessage={}", e);
+         return new ResponseEntity<>("Something went wrong when retrieving funds", INTERNAL_SERVER_ERROR);
       }
    }
 }

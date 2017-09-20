@@ -13,6 +13,6 @@ public class ClientDto {
 
    private String id;
    private String userName;
-   private Double profitAndLoss;
+   private Double funds;
 
 }

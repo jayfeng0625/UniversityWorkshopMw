@@ -31,7 +31,7 @@ public class SwaggerConfiguration {
          .title("University workshop API")
          .description("The API for the university workshop middleware application")
          .version("1.0")
-         .contact(new Contact("University Workshop", "http://itinfo.iggroup.local/content/", "prototypeservice@ig.com"))
+         .contact(new Contact("University Workshop", "https://github.com/IGLearning/UniversityWorkshopMw", "prototypeservice@ig.com"))
          .build();
    }
 }
