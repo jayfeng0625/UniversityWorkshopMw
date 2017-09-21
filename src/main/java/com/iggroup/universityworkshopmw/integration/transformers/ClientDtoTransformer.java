@@ -7,7 +7,7 @@ public class ClientDtoTransformer {
 
    public static ClientDto transform(Client client) {
       return ClientDto.builder()
-         .clientId(client.getClientId())
+         .id(client.getId())
          .userName(client.getUserName())
          .funds(client.getFunds())
          .build();

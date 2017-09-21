@@ -1,6 +1,6 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
-import com.iggroup.universityworkshopmw.domain.Helper;
+import com.iggroup.universityworkshopmw.domain.helpers.Helper;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class ClientService {
    public Client storeNewClient(Client client) {
       String uniqueId = Helper.createUniqueId(ID_PREFIX);
       Client enrichedClient = Client.builder()
-         .clientId(uniqueId)
+         .id(uniqueId)
          .userName(client.getUserName())
          .funds(INITIAL_FUNDS)
          .build();
@@ -36,14 +36,14 @@ public class ClientService {
       return funds;
    }
 
-   protected void updateFunds(String clientId, double updatedFunds) throws NoAvailableDataException {
+   public void updateFunds(String clientId, double updatedFunds) throws NoAvailableDataException {
       Client client = getClientDataFromMap(clientId);
       log.info("Updating updatedFunds for clientId={}, oldFunds={}, updatedFunds={}", clientId, client.getFunds(), updatedFunds);
       client.setFunds(updatedFunds);
       clientIdToClientModelMap.put(clientId, client);
    }
 
-   private Client getClientDataFromMap(String clientId) throws NoAvailableDataException {
+   Client getClientDataFromMap(String clientId) throws NoAvailableDataException {
       if (clientIdToClientModelMap.containsKey(clientId)) {
          return clientIdToClientModelMap.get(clientId);
       } else {

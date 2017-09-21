@@ -6,8 +6,14 @@ import com.iggroup.universityworkshopmw.domain.services.ClientService;
 import com.iggroup.universityworkshopmw.integration.controllers.ClientController;
 import com.iggroup.universityworkshopmw.integration.dto.ClientDto;
 import com.jayway.jsonpath.JsonPath;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -18,7 +24,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -29,16 +34,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpyBean(ClientService.class)
+@SpringBootTest
 public class ClientFlowIntegrationTest {
 
-   private ClientService clientService = spy(new ClientService());
-   private ClientController clientController = new ClientController(clientService);
-   private MockMvc mockMvc = standaloneSetup(clientController).build();
+   @Autowired
+   private ClientService clientService;
+   @Autowired
+   private ClientController clientController;
+   private MockMvc mockMvc;
+
+   @Before
+   public void setup() {
+      mockMvc = standaloneSetup(clientController).build();
+   }
 
    @Test
    public void clientFlow() throws Exception {
       ClientDto clientDto = ClientDto.builder()
-         .clientId(null)
+         .id(null)
          .userName("userName")
          .funds(null)
          .build();
@@ -66,7 +81,6 @@ public class ClientFlowIntegrationTest {
 
       ArgumentCaptor<String> clientIdCaptor = ArgumentCaptor.forClass(String.class);
       verify(clientService, times(1)).getFunds(clientIdCaptor.capture());
-      verifyNoMoreInteractions(clientService);
 
       String capturedClientId = clientIdCaptor.getValue();
       assertThat(capturedClientId, is(clientId));
@@ -86,7 +100,7 @@ public class ClientFlowIntegrationTest {
       verify(clientService, times(1)).storeNewClient(clientArgumentCaptor.capture());
       verifyNoMoreInteractions(clientService);
       Client client = clientArgumentCaptor.getValue();
-      assertNull(client.getClientId());
+      assertNull(client.getId());
       assertThat(client.getFunds(), is(0.0));
       assertThat(client.getUserName(), is("userName"));
    }
@@ -99,10 +113,10 @@ public class ClientFlowIntegrationTest {
       )
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.clientId", containsString("client_")))
+            .andExpect(jsonPath("$.id", containsString("client_")))
             .andExpect(jsonPath("$.funds", is(10000.0))).andReturn();
 
-      clientId = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.clientId");
+      clientId = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.id");
       return clientId;
    }
 }

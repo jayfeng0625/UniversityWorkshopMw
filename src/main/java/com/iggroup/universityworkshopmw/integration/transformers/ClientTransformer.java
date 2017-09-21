@@ -9,7 +9,7 @@ public class ClientTransformer {
       Double funds = clientDto.getFunds();
       Double safeFunds = new Double( null == funds ? "0" : funds.toString() );
       return Client.builder()
-         .clientId(clientDto.getClientId())
+         .id(clientDto.getId())
          .userName(clientDto.getUserName())
          .funds(safeFunds)
          .build();

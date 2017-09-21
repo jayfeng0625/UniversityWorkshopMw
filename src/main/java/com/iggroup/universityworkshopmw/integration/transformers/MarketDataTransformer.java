@@ -10,7 +10,7 @@ public class MarketDataTransformer {
    public static List<MarketDto> transform(List<Market> listOfMarkets) {
       return listOfMarkets.stream()
             .map(market -> MarketDto.builder()
-                  .marketId(market.getMarketId())
+                  .id(market.getId())
                   .marketName(market.getMarketName().getName())
                   .currentPrice(market.getCurrentPrice())
                   .build())

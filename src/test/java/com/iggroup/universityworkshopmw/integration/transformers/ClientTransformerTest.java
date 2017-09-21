@@ -14,12 +14,12 @@ public class ClientTransformerTest {
    @Test
    public void shouldTransformClientDtoToClientModel() {
       ClientDto clientDto = ClientDto.builder()
-         .clientId("client_12345")
+         .id("client_12345")
          .userName("userName")
          .funds(Double.valueOf(400))
          .build();
       Client client = ClientTransformer.transform(clientDto);
-      assertEquals(clientDto.getClientId(), client.getClientId());
+      assertEquals(clientDto.getId(), client.getId());
       assertEquals(clientDto.getUserName(), client.getUserName());
       assertThat(clientDto.getFunds().doubleValue(), is(client.getFunds()));
    }
@@ -27,12 +27,12 @@ public class ClientTransformerTest {
    @Test
    public void shouldHandleClientDtoWithNullValues() {
       ClientDto clientDto = ClientDto.builder()
-         .clientId(null)
+         .id(null)
          .userName(null)
          .funds(null)
          .build();
       Client client = ClientTransformer.transform(clientDto);
-      assertNull(client.getClientId());
+      assertNull(client.getId());
       assertNull(client.getUserName());
       assertThat(Double.valueOf(0).doubleValue(), is(client.getFunds()));
    }
@@ -40,12 +40,12 @@ public class ClientTransformerTest {
    @Test
    public void shouldTransformClientModelToClientDto() {
       Client client = Client.builder()
-         .clientId("client_12345")
+         .id("client_12345")
          .userName("userName")
          .funds(Double.valueOf(400))
          .build();
       ClientDto clientDto = ClientDtoTransformer.transform(client);
-      assertEquals(client.getClientId(), clientDto.getClientId());
+      assertEquals(client.getId(), clientDto.getId());
       assertEquals(client.getUserName(), clientDto.getUserName());
       assertThat(Double.valueOf(client.getFunds()), is(clientDto.getFunds()));
    }
@@ -53,12 +53,12 @@ public class ClientTransformerTest {
    @Test
    public void shouldHandleClientWithPotentialNullValues() {
       Client client = Client.builder()
-         .clientId("client_1235")
+         .id("client_1235")
          .userName(null)
          .funds(Double.valueOf(400))
          .build();
       ClientDto clientDto = ClientDtoTransformer.transform(client);
-      assertEquals(client.getClientId(), clientDto.getClientId());
+      assertEquals(client.getId(), clientDto.getId());
       assertNull(client.getUserName(), clientDto.getUserName());
       assertThat(client.getFunds(), is(Double.valueOf(client.getFunds())));
    }

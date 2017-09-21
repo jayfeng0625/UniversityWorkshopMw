@@ -10,16 +10,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.iggroup.universityworkshopmw.domain.enums.MarketName.*;
 
 @Slf4j
 @Component
 public class MarketDataService {
 
+   private final OpenPositionsService openPositionsService;
+
    private Map<String, Market> marketIdToMarketModelMap = new ConcurrentHashMap<>();
    private final String ID_PREFIX = "market_";
 
-   public MarketDataService() {
+   public MarketDataService(OpenPositionsService openPositionsService) {
+      this.openPositionsService = openPositionsService;
       initialiseMarketModelMap();
    }
 
@@ -31,13 +33,14 @@ public class MarketDataService {
 
    public Map<String, Double> getMarketPrices() {
       final Map<String, Double> idToPriceMap = marketIdToMarketModelMap.values().stream()
-            .collect(Collectors.toMap(Market::getMarketId, Market::getCurrentPrice));
+            .collect(Collectors.toMap(Market::getId, Market::getCurrentPrice));
       log.info("Retrieving all market prices={}", idToPriceMap);
       return idToPriceMap;
    }
 
    void updateMarket(Market market) {
-      marketIdToMarketModelMap.put(market.getMarketId(), market);
+      marketIdToMarketModelMap.put(market.getId(), market);
+      openPositionsService.updateMarketPrice(market.getId(), market.getCurrentPrice());
    }
 
    List<Map.Entry<String, Market>> getShuffledMapSubset() {
@@ -54,7 +57,7 @@ public class MarketDataService {
             Double startingPrice = marketName.getStartingPrice();
 
             marketIdToMarketModelMap.put(marketId, Market.builder()
-               .marketId(marketId)
+               .id(marketId)
                .marketName(marketName)
                .currentPrice(startingPrice)
                .build());

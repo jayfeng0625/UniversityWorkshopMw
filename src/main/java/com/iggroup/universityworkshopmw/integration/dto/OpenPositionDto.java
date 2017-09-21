@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientDto {
-
+public class OpenPositionDto {
    private String id;
-   private String userName;
-   private Double funds;
-
+   private String marketId;
+   private Double profitAndLoss;
+   private Double openingPrice;
+   private Integer buySize;
 }

@@ -12,7 +12,7 @@ import lombok.ToString;
 @Builder
 public class Client {
 
-   private String clientId;
+   private String id;
    private String userName;
    @Setter
    private double funds;

@@ -25,15 +25,15 @@ public class ClientServiceTest {
       Client returnClient1 = clientService.storeNewClient(client1);
       Client returnClient2 = clientService.storeNewClient(client2);
 
-      assertNotNull(returnClient1.getClientId());
-      assertNotNull(returnClient2.getClientId());
-      assertNotEquals(returnClient1.getClientId(), returnClient2.getClientId());
+      assertNotNull(returnClient1.getId());
+      assertNotNull(returnClient2.getId());
+      assertNotEquals(returnClient1.getId(), returnClient2.getId());
    }
 
    @Test
    public void getFunds_getsFundsForClientId() throws NoAvailableDataException {
       Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0));
-      String clientId = returnClient1.getClientId();
+      String clientId = returnClient1.getId();
       double expectedFunds = returnClient1.getFunds();
 
       double actualFunds = clientService.getFunds(clientId);
@@ -51,9 +51,9 @@ public class ClientServiceTest {
    @Test
    public void updateFunds_updatesFunds() throws NoAvailableDataException {
       Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0));
-      String clientId = returnClient1.getClientId();
-      double initialFunds = returnClient1.getFunds();
-      double fundsUpdate = initialFunds - 200;
+      String clientId = returnClient1.getId();
+      double initialProfitAndLoss = returnClient1.getFunds();
+      double fundsUpdate = initialProfitAndLoss - 200;
 
       clientService.updateFunds(clientId, fundsUpdate);
 
@@ -70,7 +70,7 @@ public class ClientServiceTest {
 
    private Client createClient(String clientId, String userName, double funds) {
       return Client.builder()
-         .clientId(clientId)
+         .id(clientId)
          .userName(userName)
          .funds(funds)
          .build();

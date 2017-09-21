@@ -44,7 +44,7 @@ public class MarketDataController {
    }
 
    @ApiOperation(value = "Get all market prices",
-         notes = "Returns a map consisting of marketId and current market price")
+         notes = "Returns a map consisting of id and current market price")
    @GetMapping("/allPrices")
    public ResponseEntity<?> getAllMarketPrices() {
       try {
