@@ -26,7 +26,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Api(value = "/openPositions", description = "Operations relating to open positions")
 @Slf4j
 @RestController
-@RequestMapping(value = "/openPositions", produces = "application/json;charset=UTF-8", consumes = "application/json;charset=UTF-8")
+@RequestMapping(value = "/openPositions")
 @RequiredArgsConstructor
 public class OpenPositionsController {
    private final OpenPositionsService openPositionsService;
