@@ -82,7 +82,6 @@ public class ClientController {
    @GetMapping("/{clientId}")
    public ResponseEntity<?> getClient(@PathVariable("clientId") String clientId) {
       try {
-         // TODO: 27/09/2017 Tests controlller and service and integration test
          ClientDto responseBody = ClientDtoTransformer.transform(clientService.getClientData(clientId));
          return new ResponseEntity<>(responseBody, OK);
 
@@ -95,4 +94,5 @@ public class ClientController {
          return new ResponseEntity<>("Something went wrong when retrieving client data", INTERNAL_SERVER_ERROR);
       }
    }
+
 }

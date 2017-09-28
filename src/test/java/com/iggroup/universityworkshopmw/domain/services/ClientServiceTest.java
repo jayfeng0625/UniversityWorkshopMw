@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.hamcrest.core.Is.is;
 
 public class ClientServiceTest {
 
@@ -32,13 +31,24 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void getFunds_getsFundsForClientId() throws NoAvailableDataException, DuplicatedDataException {
+   public void storeNewClient_setsCorrectInitialValues() {
+      Client client1 = createClient("", "userName1", 0, 0);
+
+      Client returnClient1 = clientService.storeNewClient(client1);
+
+      assertThat(returnClient1.getAvailableFunds()).isEqualTo(10000);
+      assertThat(returnClient1.getRunningProfitAndLoss()).isEqualTo(0);
+   }
+
+   @Test
+   public void getFunds_getsDataForClientId() throws NoAvailableDataException, DuplicatedDataException {
       Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0));
       String clientId = returnClient1.getId();
 
       Client actual = clientService.getClientData(clientId);
 
-      assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
+      assertThat(actual).isEqualToIgnoringGivenFields(expected, "id", "availableFunds");
+      assertThat(actual.getAvailableFunds()).isEqualTo( 10000.0);
    }
 
    @Test(expected = NoAvailableDataException.class)
@@ -49,11 +59,11 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void updateFunds_updatesFunds() throws NoAvailableDataException, DuplicatedDataException {
-      Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0));
+   public void updateAvailableFunds_updatesAvailableFunds() throws NoAvailableDataException, DuplicatedDataException {
+      Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0, 0));
       String clientId = returnClient1.getId();
-      double initialProfitAndLoss = returnClient1.getAvailableFunds();
-      double fundsUpdate = initialProfitAndLoss - 200;
+      double availableFunds = returnClient1.getAvailableFunds();
+      double fundsUpdate = availableFunds - 200;
 
       clientService.updateAvailableFunds(clientId, fundsUpdate);
 
@@ -66,6 +76,29 @@ public class ClientServiceTest {
       String clientId = "randomIdNotInMap";
 
       clientService.updateAvailableFunds(clientId, 900);
+   }
+
+   @Test
+   public void updateRunningProfitAndLoss_updatesAvailableFundsAndRunningProfitAndLoss() throws NoAvailableDataException {
+      Client client = clientService.storeNewClient(createClient("", "userName1", 0, 0));
+      String clientId = client.getId();
+      double initialAvailableFunds = client.getAvailableFunds();
+      // Account for a previous profit and loss calculation
+      clientService.updateRunningProfitAndLoss(clientId,5);
+      double sumOfProfitAndLoss = 500;
+
+      clientService.updateRunningProfitAndLoss(clientId, sumOfProfitAndLoss);
+
+      final Client clientData = clientService.getClientData(clientId);
+      assertThat(clientData.getRunningProfitAndLoss()).isEqualTo(sumOfProfitAndLoss);
+      assertThat(clientData.getAvailableFunds()).isEqualTo(initialAvailableFunds + sumOfProfitAndLoss);
+   }
+
+   @Test(expected = NoAvailableDataException.class)
+   public void updateRunningProfitAndLoss_handlesMapContainingNoClientDataForClientId() throws NoAvailableDataException {
+      String clientId = "randomIdNotInMap";
+
+      clientService.updateRunningProfitAndLoss(clientId, 800);
    }
 
    private Client createClient(String clientId, String userName, double funds, double profitAndLoss) {
