@@ -1,5 +1,6 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
+import com.iggroup.universityworkshopmw.domain.exceptions.DuplicatedDataException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import org.junit.Before;
@@ -18,7 +19,7 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void storeNewClient_assignsUniqueIdPerAddition() {
+   public void storeNewClient_assignsUniqueIdPerAddition() throws DuplicatedDataException {
       Client client1 = createClient("", "userName1", 0);
       Client client2 = createClient("", "userName2", 0);
 
@@ -31,7 +32,7 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void getFunds_getsFundsForClientId() throws NoAvailableDataException {
+   public void getFunds_getsFundsForClientId() throws NoAvailableDataException, DuplicatedDataException {
       Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0));
       String clientId = returnClient1.getId();
       double expectedFunds = returnClient1.getFunds();
@@ -49,7 +50,7 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void updateFunds_updatesFunds() throws NoAvailableDataException {
+   public void updateFunds_updatesFunds() throws NoAvailableDataException, DuplicatedDataException {
       Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0));
       String clientId = returnClient1.getId();
       double initialProfitAndLoss = returnClient1.getFunds();
