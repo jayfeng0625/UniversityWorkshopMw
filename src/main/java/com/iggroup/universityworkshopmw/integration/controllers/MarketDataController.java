@@ -43,18 +43,4 @@ public class MarketDataController {
       }
    }
 
-   @ApiOperation(value = "Get all market prices",
-         notes = "Returns a map consisting of id and current market price")
-   @GetMapping("/allPrices")
-   public ResponseEntity<?> getAllMarketPrices() {
-      try {
-         Map<String, Double> responseBody = marketDataService.getMarketPrices();
-         return new ResponseEntity<>(responseBody, OK);
-
-      } catch (Exception e) {
-         log.info("Exception when retrieving all market prices, exceptionMessage={}", e);
-         return new ResponseEntity<>("Something went wrong when retrieving all market prices", INTERNAL_SERVER_ERROR);
-      }
-   }
-
 }

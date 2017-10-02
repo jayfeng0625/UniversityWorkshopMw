@@ -31,13 +31,6 @@ public class MarketDataService {
       return markets;
    }
 
-   public Map<String, Double> getMarketPrices() {
-      final Map<String, Double> idToPriceMap = marketIdToMarketModelMap.values().stream()
-            .collect(Collectors.toMap(Market::getId, Market::getCurrentPrice));
-      log.info("Retrieving all market prices={}", idToPriceMap);
-      return idToPriceMap;
-   }
-
    void updateMarket(Market market) {
       marketIdToMarketModelMap.put(market.getId(), market);
       openPositionsService.updateMarketPrice(market.getId(), market.getCurrentPrice());

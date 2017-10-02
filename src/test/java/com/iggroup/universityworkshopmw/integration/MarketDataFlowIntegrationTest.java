@@ -38,15 +38,5 @@ public class MarketDataFlowIntegrationTest {
             .andExpect(jsonPath("$.[0].id", is("market_10")))
             .andExpect(jsonPath("$.[0].marketName", is(SUGAR.getName())))
             .andExpect(jsonPath("$.[0].currentPrice", is(148.0)));
-
-      //When
-      mockMvc.perform(get("/marketData/allPrices"))
-            //Then
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(TestHelper.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.*", hasSize(10)))
-            .andExpect(jsonPath("$.market_10", is(148.0)))
-            .andExpect(jsonPath("$.market_1", is(500.9)));
    }
-
 }

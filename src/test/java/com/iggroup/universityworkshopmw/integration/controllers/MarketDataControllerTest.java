@@ -74,34 +74,4 @@ public class MarketDataControllerTest {
       assertThat(content).isEqualTo("Something went wrong when retrieving all market data");
    }
 
-   @Test
-   public void getAllMarketPrices_returnsOkCodeAndMapOfMarketPrices() throws Exception {
-      //Given
-      Map<String, Double> marketIdToPriceMap = new HashMap<>();
-      marketIdToPriceMap.put("market_1", 400.0);
-      when(marketDataService.getMarketPrices()).thenReturn(marketIdToPriceMap);
-
-      //When
-      mockMvc.perform(get("/marketData/allPrices"))
-            //Then
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.market_1", is(400.0)));
-   }
-
-   @Test
-   public void getAllMarketPrices_handlesAnyException() throws Exception {
-      //Given
-      when(marketDataService.getMarketPrices()).thenThrow(new RuntimeException("Server exception!"));
-
-      //When
-      MvcResult mvcResult = mockMvc.perform(get("/marketData/allPrices"))
-            //Then
-            .andExpect(status().isInternalServerError())
-            .andReturn();
-
-      String content = mvcResult.getResponse().getContentAsString();
-      assertThat(content).isEqualTo("Something went wrong when retrieving all market prices");
-   }
-
 }
