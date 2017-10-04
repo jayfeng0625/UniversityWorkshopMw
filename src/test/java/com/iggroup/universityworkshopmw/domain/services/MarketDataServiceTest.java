@@ -35,17 +35,6 @@ public class MarketDataServiceTest {
    }
 
    @Test
-   public void getMarketPrices_returnsAllPricesForMarkets() {
-      //When
-      Map<String, Double> marketPrices = marketDataService.getMarketPrices();
-
-      //Then
-      assertThat(marketPrices.values().size()).isEqualTo(10);
-      assertThat(marketPrices.keySet()).containsOnly("market_1", "market_2", "market_3", "market_4", "market_5", "market_6", "market_7", "market_8", "market_9", "market_10");
-      assertThat(marketPrices.values()).containsOnly(500.9, 375.2, 312.0, 250.0, 300.7, 205.0, 175.4, 225.1, 125.0, 148.0);
-   }
-
-   @Test
    public void updateMarket_updatesMarketInMap() {
       //Given
       Market aRandomMarketFromMap = marketDataService.getAllMarkets().get(0);

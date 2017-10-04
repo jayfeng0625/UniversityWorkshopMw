@@ -1,5 +1,6 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
+import com.iggroup.universityworkshopmw.domain.model.Market;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +24,14 @@ public class PriceGeneratorServiceSchedulerTest {
    @Test
    public void updateMarketPrices_runsWhenScheduled_updatesPrices() throws InterruptedException {
       //Given
-      Map<String, Double> marketPrices = marketDataService.getMarketPrices();
+      Map<String, Double> marketPrices = marketDataService.getAllMarkets().stream().collect(Collectors.toMap(Market::getId, Market::getCurrentPrice));
       List<Double> initialValues = marketPrices.values().stream().collect(Collectors.toList());
 
       //When
       sleep(1000);
 
       //Then
-      Map<String, Double> updatedMarketPrices = marketDataService.getMarketPrices();
+      Map<String, Double> updatedMarketPrices = marketDataService.getAllMarkets().stream().collect(Collectors.toMap(Market::getId, Market::getCurrentPrice));
       assertThat(updatedMarketPrices.values().size()).isEqualTo(10);
       assertThat(updatedMarketPrices.keySet()).containsOnly("market_1", "market_2", "market_3", "market_4", "market_5", "market_6", "market_7", "market_8", "market_9", "market_10");
       assertThat(updatedMarketPrices.values().stream().collect(Collectors.toList())).isNotEqualTo(initialValues);
