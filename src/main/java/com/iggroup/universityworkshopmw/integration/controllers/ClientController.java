@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static java.net.HttpURLConnection.HTTP_BAD_GATEWAY;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -59,7 +60,7 @@ public class ClientController {
       } catch (DuplicatedDataException e) {
          String userName = clientDto.getUserName();
          log.info("Duplicated username={}, exceptionMessage={}", userName, e);
-         return new ResponseEntity<>("Username=" + userName + " is already used. Please create another one", HttpStatus.BAD_REQUEST);
+         return new ResponseEntity<>("Username=" + userName + " is already used. Please create another one", BAD_REQUEST);
 
       } catch (Exception e) {
          log.info("Exception when creating new client, exceptionMessage={}", e);

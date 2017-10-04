@@ -65,7 +65,10 @@ public class ClientService {
    }
 
    private void checkIfDuplicateUsername(Client client) throws DuplicatedDataException {
-      Optional<Client> duplicatedUsername = clientIdToClientModelMap.values().stream().filter(c -> c.getUserName().equals(client.getUserName())).findFirst();
+      Optional<Client> duplicatedUsername = clientIdToClientModelMap.values()
+            .stream()
+            .filter(c -> c.getUserName().equals(client.getUserName()))
+            .findFirst();
       if (duplicatedUsername.isPresent()) {
          throw new DuplicatedDataException("Duplicated username found: " + client.getUserName());
       }
