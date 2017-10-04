@@ -88,7 +88,11 @@ public class OpenPositionsService {
       if (openpositionsForClient == null) {
          sumOfPositionProfitAndLoss = 0;
       } else {
-         sumOfPositionProfitAndLoss = openpositionsForClient.stream().map(OpenPosition::getProfitAndLoss).mapToDouble(d -> d).sum();
+         sumOfPositionProfitAndLoss = openpositionsForClient
+               .stream()
+               .map(OpenPosition::getProfitAndLoss)
+               .mapToDouble(d -> d)
+               .sum();
       }
       try {
          clientService.updateRunningProfitAndLoss(clientId, sumOfPositionProfitAndLoss);

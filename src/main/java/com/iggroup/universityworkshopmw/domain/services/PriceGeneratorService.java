@@ -40,7 +40,6 @@ public class PriceGeneratorService {
                .build()
          );
 
-//         log.info("Updated market price for id={}, oldPrice={}, newPrice={}, normalDist={}", id, oldPrice, newMarketPrice, (newMarketPrice - oldPrice));
       });
 
    }
