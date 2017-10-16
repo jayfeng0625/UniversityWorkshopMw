@@ -65,7 +65,9 @@ public class OpenPositionsService {
       }
 
       calculateAndUpdateRunningProfitAndLoss(clientId, clientPositionStore.get(clientId));
-      updateClientFunds(clientId, closingProfitAndLoss, openingPositionPrice);
+      final double closingFunds = calculateClosingFunds(clientId, closingProfitAndLoss, openingPositionPrice);
+      clientService.updateAvailableFunds(clientId, closingFunds);
+
       return closingProfitAndLoss;
    }
 
@@ -166,9 +168,8 @@ public class OpenPositionsService {
       throw new NoAvailableDataException("No positions available for client: " + clientId);
    }
 
-   private void updateClientFunds(String clientId, double closingProfitAndLoss, double openingPositionPrice) throws NoAvailableDataException {
+   private double calculateClosingFunds(String clientId, double closingProfitAndLoss, double openingPositionPrice) throws NoAvailableDataException {
       Client client = clientService.getClientData(clientId);
-      double updatedFunds = client.getAvailableFunds() + openingPositionPrice + closingProfitAndLoss;
-      clientService.updateAvailableFunds(clientId, updatedFunds);
+      return client.getAvailableFunds() + openingPositionPrice + closingProfitAndLoss;
    }
 }
