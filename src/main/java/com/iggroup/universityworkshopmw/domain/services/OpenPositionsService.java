@@ -81,7 +81,7 @@ public class OpenPositionsService {
    }
 
    private OpenPosition createNewPosition(OpenPosition openPosition, Double profitAndLoss, boolean generateId) {
-      String id = generateId ? createUniqueId("opid_") : openPosition.getId();
+      String id = checkForDuplicateOpenPositionId(openPosition, generateId);
 
       return OpenPosition.builder()
          .id(id)
@@ -90,6 +90,14 @@ public class OpenPositionsService {
          .openingPrice(openPosition.getOpeningPrice())
          .profitAndLoss(profitAndLoss)
          .build();
+   }
+
+   private String checkForDuplicateOpenPositionId(OpenPosition openPosition, boolean generateId) {
+      String id;
+      do {
+         id = generateId ? createUniqueId("opid_") : openPosition.getId();
+      } while (generateId && clientPositionStore.containsKey(id));
+      return id;
    }
 
    private Double calculateNewProfitAndLoss(Double newValue, Double openingPrice, Integer buySize) {
