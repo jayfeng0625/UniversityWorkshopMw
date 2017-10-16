@@ -59,7 +59,7 @@ public class ClientController {
 
       } catch (DuplicatedDataException e) {
          String userName = clientDto.getUserName();
-         log.info("Duplicated username={}, exceptionMessage={}", userName, e);
+         log.info("Duplicated username={}, ", userName, e);
          return new ResponseEntity<>("Username=" + userName + " is already used. Please create another one", BAD_REQUEST);
 
       } catch (Exception e) {
@@ -89,7 +89,7 @@ public class ClientController {
          return new ResponseEntity<>("No available client data for clientId=" + clientId, NOT_FOUND);
 
       } catch (Exception e) {
-         log.info("Exception when retrieving funds, exceptionMessage={}", e);
+         log.info("Exception when retrieving funds, ", e);
          return new ResponseEntity<>("Something went wrong when retrieving funds", INTERNAL_SERVER_ERROR);
       }
    }
