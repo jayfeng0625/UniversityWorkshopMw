@@ -31,7 +31,7 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void storeNewClient_setsCorrectInitialValues() {
+   public void storeNewClient_setsCorrectInitialValues() throws DuplicatedDataException {
       Client client1 = createClient("", "userName1", 0, 0);
 
       Client returnClient1 = clientService.storeNewClient(client1);
@@ -41,8 +41,9 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void getFunds_getsDataForClientId() throws NoAvailableDataException, DuplicatedDataException {
-      Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0));
+   public void getClientData_getsDataForClientId() throws NoAvailableDataException, DuplicatedDataException {
+      final Client expected = createClient("", "userName1", 0, 0);
+      Client returnClient1 = clientService.storeNewClient(expected);
       String clientId = returnClient1.getId();
 
       Client actual = clientService.getClientData(clientId);
@@ -79,7 +80,7 @@ public class ClientServiceTest {
    }
 
    @Test
-   public void updateRunningProfitAndLoss_updatesAvailableFundsAndRunningProfitAndLoss() throws NoAvailableDataException {
+   public void updateRunningProfitAndLoss_updatesAvailableFundsAndRunningProfitAndLoss() throws NoAvailableDataException, DuplicatedDataException {
       Client client = clientService.storeNewClient(createClient("", "userName1", 0, 0));
       String clientId = client.getId();
       double initialAvailableFunds = client.getAvailableFunds();

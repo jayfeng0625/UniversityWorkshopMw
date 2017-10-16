@@ -130,16 +130,14 @@ public class OpenPositionsService {
 
    private Double calculateNewProfitAndLoss(double newValue, double openingPrice, int buySize) {
       return (double) Math.round(((newValue - openingPrice) * buySize) * 100) / 100;
+   }
+
    private String checkForDuplicateOpenPositionId(OpenPosition openPosition, boolean generateId) {
       String id;
       do {
          id = generateId ? createUniqueId("opid_") : openPosition.getId();
       } while (generateId && clientPositionStore.containsKey(id));
       return id;
-   }
-
-   private Double calculateNewProfitAndLoss(Double newValue, Double openingPrice, Integer buySize) {
-      return (newValue - openingPrice) * buySize;
    }
 
    private double checkClientAvailableFunds(String clientId, double positionPrice) throws NoAvailableDataException, InsufficientFundsException {
