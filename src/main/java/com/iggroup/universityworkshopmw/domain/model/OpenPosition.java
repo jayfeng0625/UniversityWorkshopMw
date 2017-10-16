@@ -14,5 +14,5 @@ public class OpenPosition {
    private String marketId;
    private Double profitAndLoss;
    private Double openingPrice;
-   private Integer buySize;
+   private int buySize;
 }
