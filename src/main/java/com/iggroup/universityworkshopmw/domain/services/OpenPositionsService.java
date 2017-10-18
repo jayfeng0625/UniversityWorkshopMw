@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.iggroup.universityworkshopmw.domain.helpers.Helper.createUniqueId;
+import static com.iggroup.universityworkshopmw.domain.helpers.Helper.roundToTwoDecimalPlaces;
 
 @Slf4j
 @Component
@@ -41,6 +42,10 @@ public class OpenPositionsService {
    }
 
    public OpenPosition addOpenPositionForClient(String clientId, OpenPosition newOpenPosition) throws NoAvailableDataException, InsufficientFundsException, NoMarketPriceAvailableException {
+      if (newOpenPosition.getBuySize() == 0) {
+         log.error("Buy size is ZERO. Cannot open a position with size ZERO.");
+         throw new NoAvailableDataException("Buy size is ZERO. Cannot open a position with size ZERO.");
+      }
       newOpenPosition.setOpeningPrice(marketDataCache.getCurrentPriceForMarket(newOpenPosition.getMarketId()));
 
       double positionPrice = getPositionOpeningPrice(newOpenPosition);
@@ -50,7 +55,7 @@ public class OpenPositionsService {
       OpenPosition openPositionWithId = updateStoreWithNewPosition(clientId, newOpenPosition, openPositionsForClient);
 
       double newAvailableFunds = calculateNewAvailableFunds(clientAvailableFunds, positionPrice);
-      clientService.updateAvailableFunds(clientId, newAvailableFunds);
+      clientService.updateAvailableFunds(clientId, roundToTwoDecimalPlaces(newAvailableFunds));
 
       log.info("Added new openPosition={}", newOpenPosition);
       return openPositionWithId;
@@ -67,7 +72,7 @@ public class OpenPositionsService {
       double closingPrice = marketDataCache.getCurrentPriceForMarket(position.getMarketId());
 
       double openingPositionPrice = getPositionOpeningPrice(position);
-      Double closingProfitAndLoss = calculateNewProfitAndLoss(closingPrice, position.getOpeningPrice(), position.getBuySize());
+      double closingProfitAndLoss = calculateNewProfitAndLoss(closingPrice, position.getOpeningPrice(), position.getBuySize());
 
       openPositions.remove(position);
       if (openPositions.isEmpty()) {
@@ -76,7 +81,7 @@ public class OpenPositionsService {
 
       calculateAndUpdateRunningProfitAndLoss(clientId, clientPositionStore.get(clientId));
       final double closingFunds = calculateClosingFunds(clientId, closingProfitAndLoss, openingPositionPrice);
-      clientService.updateAvailableFunds(clientId, closingFunds);
+      clientService.updateAvailableFunds(clientId, roundToTwoDecimalPlaces(closingFunds));
 
       log.info("Closed openPosition={}, closingProfitAndLoss={}", position, closingProfitAndLoss);
       return closingProfitAndLoss;
@@ -140,7 +145,7 @@ public class OpenPositionsService {
    }
 
    private Double calculateNewProfitAndLoss(double newValue, double openingPrice, int buySize) {
-      return (double) Math.round(((newValue - openingPrice) * buySize) * 100) / 100;
+      return (newValue - openingPrice) * buySize;
    }
 
    private String checkForDuplicateOpenPositionId(OpenPosition openPosition, boolean generateId) {

@@ -16,7 +16,6 @@ import java.util.stream.IntStream;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -119,6 +118,11 @@ public class OpenPositionsServiceTest {
 
       assertThat(client1Positions.get(1).getProfitAndLoss()).isEqualTo(60.00);
       assertThat(client2Positions.get(1).getProfitAndLoss()).isEqualTo(60.00);
+   }
+
+   @Test(expected = NoAvailableDataException.class)
+   public void shouldThrowExceptionIfBuySizeIsZeroForAnOpenPosition() throws NoAvailableDataException, NoMarketPriceAvailableException {
+      openPositionsService.addOpenPositionForClient("clientId", OpenPosition.builder().buySize(0).build());
    }
 
    @Test
@@ -335,6 +339,4 @@ public class OpenPositionsServiceTest {
       assertThat(resultingOpenPosition.getOpeningPrice()).isEqualTo(openPosition.getOpeningPrice());
    }
 
-
-   // TODO: 17/10/2017 Test the exception for now marketprice
 }
