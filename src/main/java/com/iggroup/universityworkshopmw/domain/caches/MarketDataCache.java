@@ -62,8 +62,6 @@ public class MarketDataCache {
       Market market = null;
       if (marketIdToMarketModelMap.containsKey(marketId)) {
          market = marketIdToMarketModelMap.get(marketId);
-      } else {
-         throwException(marketId);
       }
       return market == null ? throwException(marketId) : market.getCurrentPrice();
    }
