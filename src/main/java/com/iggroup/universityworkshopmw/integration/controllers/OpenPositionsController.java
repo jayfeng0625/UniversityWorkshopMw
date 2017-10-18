@@ -91,7 +91,7 @@ public class OpenPositionsController {
          return new ResponseEntity<>(response, OK);
       } catch (NoAvailableDataException e) {
          log.info("Client={} had no open positions, or no positions matching clientId={}, ", clientId, openPositionId, e);
-         return new ResponseEntity<>("Client: " + clientId + " had no open positions or no positions matching clientId: " + openPositionId, BAD_REQUEST);
+         return new ResponseEntity<>("Client: " + clientId + " had no open positions or no positions matching id: " + openPositionId, BAD_REQUEST);
       } catch (Exception e) {
          log.info("Could not delete position={}, for client={}, ", openPositionId, clientId, e);
          return new ResponseEntity<>("Could not close position: " + openPositionId + " for client: " + clientId, INTERNAL_SERVER_ERROR);
