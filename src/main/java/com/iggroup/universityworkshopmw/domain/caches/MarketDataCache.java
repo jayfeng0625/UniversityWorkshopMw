@@ -71,5 +71,4 @@ public class MarketDataCache {
       throw new NoMarketPriceAvailableException("Could not get current price for marketId=" + marketId);
    }
 
-   // TODO: 17/10/2017 Test this!
 }
