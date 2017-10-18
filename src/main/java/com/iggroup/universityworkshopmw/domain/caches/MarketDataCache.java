@@ -62,8 +62,6 @@ public class MarketDataCache {
       Market market = null;
       if (marketIdToMarketModelMap.containsKey(marketId)) {
          market = marketIdToMarketModelMap.get(marketId);
-      } else {
-         throwException(marketId);
       }
       return market == null ? throwException(marketId) : market.getCurrentPrice();
    }
@@ -73,5 +71,4 @@ public class MarketDataCache {
       throw new NoMarketPriceAvailableException("Could not get current price for marketId=" + marketId);
    }
 
-   // TODO: 17/10/2017 Test this!
 }
