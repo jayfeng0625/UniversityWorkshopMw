@@ -1,6 +1,7 @@
 package com.iggroup.universityworkshopmw.integration.controllers;
 
 import com.iggroup.universityworkshopmw.domain.exceptions.InsufficientFundsException;
+import com.iggroup.universityworkshopmw.domain.exceptions.MissingBuySizeException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
@@ -15,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,12 +71,15 @@ public class OpenPositionsController {
       } catch (NoAvailableDataException e) {
          log.info("Could not open position for client={}, ", clientId, e);
          return new ResponseEntity<>("Could not open position for clientId: " + clientId, BAD_REQUEST);
-      } catch (Exception e) {
-         log.info("Could not add an open position for client={}, ", clientId, e);
-         return new ResponseEntity<>("Something went wrong when opening a position", INTERNAL_SERVER_ERROR);
       } catch (NoMarketPriceAvailableException e) {
          log.info("No available price for marketId={}, ", openPositionDto.getMarketId(), e);
          return new ResponseEntity<>("No available price for marketId=" + openPositionDto.getMarketId(), BAD_REQUEST);
+      } catch (MissingBuySizeException e) {
+         log.info("No buy size given for open position, so cannot open position.", openPositionDto.getMarketId(), e);
+         return new ResponseEntity<>("No buy size given for open position, so cannot open position.", BAD_REQUEST);
+      } catch (Exception e) {
+         log.info("Could not add an open position for client={}, ", clientId, e);
+         return new ResponseEntity<>("Something went wrong when opening a position", INTERNAL_SERVER_ERROR);
       }
    }
 
@@ -92,12 +95,12 @@ public class OpenPositionsController {
       } catch (NoAvailableDataException e) {
          log.info("Client={} had no open positions, or no positions matching clientId={}, ", clientId, openPositionId, e);
          return new ResponseEntity<>("Client: " + clientId + " had no open positions or no positions matching id: " + openPositionId, BAD_REQUEST);
-      } catch (Exception e) {
-         log.info("Could not delete position={}, for client={}, ", openPositionId, clientId, e);
-         return new ResponseEntity<>("Could not close position: " + openPositionId + " for client: " + clientId, INTERNAL_SERVER_ERROR);
       } catch (NoMarketPriceAvailableException e) {
          log.info("No available price for open position's market, ", e);
          return new ResponseEntity<>("No available price for open position's market.", BAD_REQUEST);
+      } catch (Exception e) {
+         log.info("Could not delete position={}, for client={}, ", openPositionId, clientId, e);
+         return new ResponseEntity<>("Could not close position: " + openPositionId + " for client: " + clientId, INTERNAL_SERVER_ERROR);
       }
    }
 }

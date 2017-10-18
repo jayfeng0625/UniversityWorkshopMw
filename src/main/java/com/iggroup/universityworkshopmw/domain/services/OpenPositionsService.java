@@ -2,6 +2,7 @@ package com.iggroup.universityworkshopmw.domain.services;
 
 import com.iggroup.universityworkshopmw.domain.caches.MarketDataCache;
 import com.iggroup.universityworkshopmw.domain.exceptions.InsufficientFundsException;
+import com.iggroup.universityworkshopmw.domain.exceptions.MissingBuySizeException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
@@ -41,10 +42,10 @@ public class OpenPositionsService {
       throw new NoAvailableDataException("No open positions exist for client: " + clientId);
    }
 
-   public OpenPosition addOpenPositionForClient(String clientId, OpenPosition newOpenPosition) throws NoAvailableDataException, InsufficientFundsException, NoMarketPriceAvailableException {
+   public OpenPosition addOpenPositionForClient(String clientId, OpenPosition newOpenPosition) throws InsufficientFundsException, NoMarketPriceAvailableException, MissingBuySizeException, NoAvailableDataException {
       if (newOpenPosition.getBuySize() == 0) {
          log.error("Buy size is ZERO. Cannot open a position with size ZERO.");
-         throw new NoAvailableDataException("Buy size is ZERO. Cannot open a position with size ZERO.");
+         throw new MissingBuySizeException("Buy size is ZERO. Cannot open a position with size ZERO.");
       }
       newOpenPosition.setOpeningPrice(marketDataCache.getCurrentPriceForMarket(newOpenPosition.getMarketId()));
 
@@ -65,9 +66,9 @@ public class OpenPositionsService {
       List<OpenPosition> openPositions = getPositionDataFromMap(clientId);
 
       OpenPosition position = openPositions.stream()
-         .filter(pos -> pos.getId().equals(openPositionToClose))
-         .findFirst()
-         .orElseThrow(() -> new NoAvailableDataException("No position exists with id: " + openPositionToClose));
+            .filter(pos -> pos.getId().equals(openPositionToClose))
+            .findFirst()
+            .orElseThrow(() -> new NoAvailableDataException("No position exists with id: " + openPositionToClose));
 
       double closingPrice = marketDataCache.getCurrentPriceForMarket(position.getMarketId());
 
@@ -89,16 +90,16 @@ public class OpenPositionsService {
 
    public void updateMarketPrice(String marketId, Double newValue) {
       clientPositionStore.keySet().stream()
-         .forEach(clientId -> {
-            List<OpenPosition> openPositions = clientPositionStore.get(clientId);
-            openPositions.stream()
-               .filter(openPosition -> openPosition.getMarketId().equals(marketId))
-               .forEach(openPosition -> updateProfitAndLoss(newValue, openPosition, openPositions));
+            .forEach(clientId -> {
+               List<OpenPosition> openPositions = clientPositionStore.get(clientId);
+               openPositions.stream()
+                     .filter(openPosition -> openPosition.getMarketId().equals(marketId))
+                     .forEach(openPosition -> updateProfitAndLoss(newValue, openPosition, openPositions));
 
-            if (openPositions.stream().anyMatch(openPosition -> openPosition.getMarketId().equals(marketId))) {
-               calculateAndUpdateRunningProfitAndLoss(clientId, openPositions);
-            }
-         });
+               if (openPositions.stream().anyMatch(openPosition -> openPosition.getMarketId().equals(marketId))) {
+                  calculateAndUpdateRunningProfitAndLoss(clientId, openPositions);
+               }
+            });
    }
 
    private void calculateAndUpdateRunningProfitAndLoss(String clientId, List<OpenPosition> openpositionsForClient) {
@@ -136,12 +137,12 @@ public class OpenPositionsService {
       String id = checkForDuplicateOpenPositionId(openPosition, generateId);
 
       return OpenPosition.builder()
-         .id(id)
-         .marketId(openPosition.getMarketId())
-         .buySize(openPosition.getBuySize())
-         .openingPrice(openPosition.getOpeningPrice())
-         .profitAndLoss(profitAndLoss)
-         .build();
+            .id(id)
+            .marketId(openPosition.getMarketId())
+            .buySize(openPosition.getBuySize())
+            .openingPrice(openPosition.getOpeningPrice())
+            .profitAndLoss(profitAndLoss)
+            .build();
    }
 
    private Double calculateNewProfitAndLoss(double newValue, double openingPrice, int buySize) {

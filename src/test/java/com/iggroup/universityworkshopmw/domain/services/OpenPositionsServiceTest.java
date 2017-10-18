@@ -2,6 +2,7 @@ package com.iggroup.universityworkshopmw.domain.services;
 
 import com.iggroup.universityworkshopmw.domain.caches.MarketDataCache;
 import com.iggroup.universityworkshopmw.domain.exceptions.InsufficientFundsException;
+import com.iggroup.universityworkshopmw.domain.exceptions.MissingBuySizeException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
@@ -52,7 +53,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldAddOpenPositionsForClientWithNoPositions() throws Exception, NoMarketPriceAvailableException {
+   public void shouldAddOpenPositionsForClientWithNoPositions() throws Exception {
       when(clientService.getClientData("client_1")).thenReturn(createClient("client_1"));
 
       openPositionsService.addOpenPositionForClient("client_1", openPosition1);
@@ -70,7 +71,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldAddNewPositionForClientWithExistingPositions() throws Exception, NoMarketPriceAvailableException {
+   public void shouldAddNewPositionForClientWithExistingPositions() throws Exception {
       when(clientService.getClientData("client_3")).thenReturn(createClient("client_3"));
 
       openPositionsService.addOpenPositionForClient("client_3", openPosition1);
@@ -83,7 +84,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test(expected = InsufficientFundsException.class)
-   public void shouldThrowExceptionIfClientLacksFundsToTrade() throws Exception, NoMarketPriceAvailableException {
+   public void shouldThrowExceptionIfClientLacksFundsToTrade() throws Exception {
       when(marketDataCache.getCurrentPriceForMarket(openPosition1.getMarketId())).thenReturn(openPosition1.getOpeningPrice());
       when(clientService.getClientData("client_1")).thenReturn(Client.builder()
             .id("client_1")
@@ -95,7 +96,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void addOpenPositionForClient_updatedAvailableFunds() throws NoAvailableDataException, NoMarketPriceAvailableException {
+   public void addOpenPositionForClient_updatedAvailableFunds() throws NoMarketPriceAvailableException, NoAvailableDataException, MissingBuySizeException {
       when(marketDataCache.getCurrentPriceForMarket(openPosition1.getMarketId())).thenReturn(openPosition1.getOpeningPrice());
       when(clientService.getClientData("client_3")).thenReturn(createClient("client_3"));
 
@@ -109,7 +110,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldUpdateProfitAndLossForAllClientsWhenPriceIncreases() throws Exception, NoMarketPriceAvailableException {
+   public void shouldUpdateProfitAndLossForAllClientsWhenPriceIncreases() throws Exception {
       initialiseClientPositions();
       openPositionsService.updateMarketPrice("market_2", 200.00);
 
@@ -120,8 +121,8 @@ public class OpenPositionsServiceTest {
       assertThat(client2Positions.get(1).getProfitAndLoss()).isEqualTo(60.00);
    }
 
-   @Test(expected = NoAvailableDataException.class)
-   public void shouldThrowExceptionIfBuySizeIsZeroForAnOpenPosition() throws NoAvailableDataException, NoMarketPriceAvailableException {
+   @Test(expected = MissingBuySizeException.class)
+   public void shouldThrowExceptionIfBuySizeIsZeroForAnOpenPosition() throws NoAvailableDataException, NoMarketPriceAvailableException, MissingBuySizeException {
       openPositionsService.addOpenPositionForClient("clientId", OpenPosition.builder().buySize(0).build());
    }
 
@@ -151,7 +152,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldUpdateProfitAndLossForMultiplePositionsOnTheSameMarketForMultipleClients() throws Exception, NoMarketPriceAvailableException {
+   public void shouldUpdateProfitAndLossForMultiplePositionsOnTheSameMarketForMultipleClients() throws Exception {
       initialiseClientPositions();
       when(marketDataCache.getCurrentPriceForMarket(openPosition6.getMarketId())).thenReturn(openPosition6.getOpeningPrice());
       openPositionsService.addOpenPositionForClient("client_1", openPosition6);
@@ -188,12 +189,12 @@ public class OpenPositionsServiceTest {
    }
 
    @Test(expected = NoAvailableDataException.class)
-   public void shouldThrowExceptionWhenClosingPositionThatDoesntExist() throws Exception, NoMarketPriceAvailableException {
+   public void shouldThrowExceptionWhenClosingPositionThatDoesntExist() throws Exception {
       openPositionsService.closeOpenPosition("client_1", "made_up_position");
    }
 
    @Test
-   public void closeOpenPosition_calculatesAndUpdatedAvailableFunds() throws Exception, NoMarketPriceAvailableException {
+   public void closeOpenPosition_calculatesAndUpdatedAvailableFunds() throws Exception {
       when(clientService.getClientData("client_1")).thenReturn(createClient("client_1"));
       when(marketDataCache.getCurrentPriceForMarket(openPosition1.getMarketId())).thenReturn(250.0);
       openPositionsService.addOpenPositionForClient("client_1", openPosition1);
@@ -291,6 +292,8 @@ public class OpenPositionsServiceTest {
                   e.printStackTrace();
                } catch (NoMarketPriceAvailableException e) {
                   e.printStackTrace();
+               } catch (MissingBuySizeException e) {
+                  e.printStackTrace();
                }
             });
 
@@ -303,6 +306,8 @@ public class OpenPositionsServiceTest {
                   e.printStackTrace();
                } catch (NoMarketPriceAvailableException e) {
                   e.printStackTrace();
+               } catch (MissingBuySizeException e) {
+                  e.printStackTrace();
                }
             });
 
@@ -314,6 +319,8 @@ public class OpenPositionsServiceTest {
                } catch (NoAvailableDataException e) {
                   e.printStackTrace();
                } catch (NoMarketPriceAvailableException e) {
+                  e.printStackTrace();
+               } catch (MissingBuySizeException e) {
                   e.printStackTrace();
                }
             });

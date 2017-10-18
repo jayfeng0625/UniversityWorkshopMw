@@ -23,7 +23,7 @@ public class PriceGeneratorService {
       this.marketDataService = marketDataService;
    }
 
-   @Scheduled(fixedRate = 1000)
+   @Scheduled(fixedRate = 300)
    private void updateMarketPrices() {
       List<Map.Entry<String, Market>> updateSubList = marketDataService.getShuffledMapSubset();
 
