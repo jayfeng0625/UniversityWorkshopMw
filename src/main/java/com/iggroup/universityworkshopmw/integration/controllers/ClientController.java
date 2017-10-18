@@ -5,6 +5,7 @@ import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataExcepti
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.services.ClientService;
 import com.iggroup.universityworkshopmw.integration.dto.ClientDto;
+import com.iggroup.universityworkshopmw.integration.dto.CreateClientDto;
 import com.iggroup.universityworkshopmw.integration.transformers.ClientDtoTransformer;
 import com.iggroup.universityworkshopmw.integration.transformers.ClientTransformer;
 import io.swagger.annotations.Api;
@@ -13,7 +14,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +51,7 @@ public class ClientController {
          message = "Couldn't create client")
    })
    @PostMapping("/createClient")
-   public ResponseEntity<?> createClient(@RequestBody ClientDto clientDto) {
+   public ResponseEntity<?> createClient(@RequestBody CreateClientDto clientDto) {
       try {
          Client clientTransformed = ClientTransformer.transform(clientDto);
          ClientDto responseBody = ClientDtoTransformer.transform(clientService.storeNewClient(clientTransformed));
