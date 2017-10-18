@@ -5,6 +5,7 @@ import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataExcepti
 import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
 import com.iggroup.universityworkshopmw.domain.services.OpenPositionsService;
+import com.iggroup.universityworkshopmw.integration.dto.AddOpenPositionDto;
 import com.iggroup.universityworkshopmw.integration.dto.OpenPositionDto;
 import com.iggroup.universityworkshopmw.integration.transformers.OpenPositionDtoTransformer;
 import com.iggroup.universityworkshopmw.integration.transformers.OpenPositionTransformer;
@@ -15,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +57,7 @@ public class OpenPositionsController {
       response = String.class)
    @PostMapping("/{clientId}")
    public ResponseEntity<?> addOpenPosition(@PathVariable("clientId") String clientId,
-                                            @RequestBody OpenPositionDto openPositionDto) {
+                                            @RequestBody AddOpenPositionDto openPositionDto) {
       try {
          OpenPosition openPosition = OpenPositionTransformer.transform(openPositionDto);
          OpenPosition openPositionWithId = openPositionsService.addOpenPositionForClient(clientId, openPosition);

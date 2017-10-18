@@ -7,7 +7,7 @@ import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.services.ClientService;
 import com.iggroup.universityworkshopmw.domain.services.OpenPositionsService;
 import com.iggroup.universityworkshopmw.integration.controllers.OpenPositionsController;
-import com.iggroup.universityworkshopmw.integration.dto.OpenPositionDto;
+import com.iggroup.universityworkshopmw.integration.dto.AddOpenPositionDto;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class OpenPositionFlowIntegrationTest {
       String clientId = client.getId();
 
       //Open a position
-      OpenPositionDto openPositionDto = createOpenPositionDto();
+      AddOpenPositionDto openPositionDto = createOpenPositionDto();
       final Integer buySize = openPositionDto.getBuySize();
       TestHelper.ResultCaptor<Double> openingPriceCaptor = new TestHelper.ResultCaptor<>();
       doAnswer(openingPriceCaptor).when(marketDataCache).getCurrentPriceForMarket(openPositionDto.getMarketId());
@@ -63,7 +63,6 @@ public class OpenPositionFlowIntegrationTest {
             .andReturn();
 
       final Double openingPrice = openingPriceCaptor.getResult();
-      openPositionDto.setOpeningPrice(openingPrice); // Setting test dto with same field
       String openPositionId = JsonPath.read(addOPResponse.getResponse().getContentAsString(), "$.openPositionId");
       verify(openPositionsService, times(1)).addOpenPositionForClient(clientId, transform(openPositionDto));
       verify(clientService, times(1)).updateAvailableFunds(clientId, 10000 - (buySize * openingPrice));
@@ -80,7 +79,7 @@ public class OpenPositionFlowIntegrationTest {
       String contentFromGetResponse = mvcResult.getResponse().getContentAsString();
 
       verify(openPositionsService, times(1)).getOpenPositionsForClient(clientId);
-      assertThat(contentFromGetResponse).isEqualTo("[{\"id\":\"" + openPositionId + "\",\"marketId\":\"market_1\",\"profitAndLoss\":1234.0,\"openingPrice\":"+openingPrice+",\"buySize\":10}]");
+      assertThat(contentFromGetResponse).isEqualTo("[{\"id\":\"" + openPositionId + "\",\"marketId\":\"market_1\",\"profitAndLoss\":0.0,\"openingPrice\":"+openingPrice+",\"buySize\":10}]");
 
       //Delete a position
       TestHelper.ResultCaptor<Double> closingPriceCaptor = new TestHelper.ResultCaptor<>();
@@ -116,11 +115,9 @@ public class OpenPositionFlowIntegrationTest {
             .build();
    }
 
-   private OpenPositionDto createOpenPositionDto() {
-      return OpenPositionDto.builder()
-            .id("id1")
+   private AddOpenPositionDto createOpenPositionDto() {
+      return AddOpenPositionDto.builder()
             .marketId("market_1")
-            .profitAndLoss(1234.00)
             .buySize(10)
             .build();
    }
