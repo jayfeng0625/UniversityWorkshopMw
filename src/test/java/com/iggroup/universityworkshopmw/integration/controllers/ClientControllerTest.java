@@ -3,7 +3,7 @@ package com.iggroup.universityworkshopmw.integration.controllers;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.services.ClientService;
-import com.iggroup.universityworkshopmw.integration.dto.ClientDto;
+import com.iggroup.universityworkshopmw.integration.dto.CreateClientDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -47,11 +47,8 @@ public class ClientControllerTest {
 
    @Test
    public void createClient_returnsOkCodeAndClientIdAndFunds() throws Exception {
-      ClientDto clientDto = ClientDto.builder()
-         .id(null)
+      CreateClientDto clientDto = CreateClientDto.builder()
          .userName("userName")
-         .availableFunds(null)
-         .runningProfitAndLoss(null)
          .build();
       Client clientAdded = Client.builder()
          .id("client_12345")
@@ -84,11 +81,8 @@ public class ClientControllerTest {
 
    @Test
    public void createClient_handlesAnyException_returnsServerErrorAndInfoString() throws Exception {
-      ClientDto clientDto = ClientDto.builder()
-         .id(null)
+      CreateClientDto clientDto = CreateClientDto.builder()
          .userName("userName")
-         .availableFunds(null)
-         .runningProfitAndLoss(null)
          .build();
       when(clientService.storeNewClient(any(Client.class))).thenThrow(new RuntimeException("Server exception!"));
 
