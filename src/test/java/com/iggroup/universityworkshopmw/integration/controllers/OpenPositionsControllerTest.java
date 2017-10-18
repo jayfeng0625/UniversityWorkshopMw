@@ -1,6 +1,6 @@
 package com.iggroup.universityworkshopmw.integration.controllers;
 
-import com.iggroup.universityworkshopmw.domain.model.Client;
+import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
 import com.iggroup.universityworkshopmw.domain.services.OpenPositionsService;
 import com.iggroup.universityworkshopmw.integration.dto.OpenPositionDto;
@@ -26,7 +26,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class OpenPositionsControllerTest {
@@ -76,7 +75,7 @@ public class OpenPositionsControllerTest {
    }
 
    @Test
-   public void createsAnOpenPosition() throws Exception {
+   public void createsAnOpenPosition() throws Exception, NoMarketPriceAvailableException {
       OpenPositionDto openPositionDto = createOpenPositionDto();
       OpenPosition openPosition = transform(openPositionDto);
       when(openPositionsService.addOpenPositionForClient(eq("client_12345"), any(OpenPosition.class)))
@@ -93,12 +92,12 @@ public class OpenPositionsControllerTest {
    }
 
    @Test
-   public void removesAnOpenPosition() throws Exception {
+   public void removesAnOpenPosition() throws Exception, NoMarketPriceAvailableException {
       OpenPositionDto openPositionDto = createOpenPositionDto();
-      when(openPositionsService.closeOpenPosition("client_12345", "open_position_id", 1000.00))
+      when(openPositionsService.closeOpenPosition("client_12345", "open_position_id"))
          .thenReturn(1000.00);
 
-      MvcResult mvcResult = mockMvc.perform(post("/openPositions/client_12345/open_position_id/1000")
+      MvcResult mvcResult = mockMvc.perform(post("/openPositions/client_12345/open_position_id")
          .contentType(APPLICATION_JSON_UTF8)
          .content(convertObjectToJsonBytes(openPositionDto))
       )

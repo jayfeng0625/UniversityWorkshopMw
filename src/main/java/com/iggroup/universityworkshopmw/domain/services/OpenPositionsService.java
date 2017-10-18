@@ -1,7 +1,9 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
+import com.iggroup.universityworkshopmw.domain.caches.MarketDataCache;
 import com.iggroup.universityworkshopmw.domain.exceptions.InsufficientFundsException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
+import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +19,14 @@ import static com.iggroup.universityworkshopmw.domain.helpers.Helper.createUniqu
 @Slf4j
 @Component
 public class OpenPositionsService {
+
    private final ClientService clientService;
+   private final MarketDataCache marketDataCache;
    private ConcurrentMap<String, List<OpenPosition>> clientPositionStore;
 
-   public OpenPositionsService(ClientService clientService) {
+   public OpenPositionsService(ClientService clientService, MarketDataCache marketDataCache) {
       this.clientService = clientService;
+      this.marketDataCache = marketDataCache;
       clientPositionStore = new ConcurrentHashMap<>();
 
    }
@@ -35,7 +40,9 @@ public class OpenPositionsService {
       throw new NoAvailableDataException("No open positions exist for client: " + clientId);
    }
 
-   public OpenPosition addOpenPositionForClient(String clientId, OpenPosition newOpenPosition) throws NoAvailableDataException, InsufficientFundsException {
+   public OpenPosition addOpenPositionForClient(String clientId, OpenPosition newOpenPosition) throws NoAvailableDataException, InsufficientFundsException, NoMarketPriceAvailableException {
+      newOpenPosition.setOpeningPrice(marketDataCache.getCurrentPriceForMarket(newOpenPosition.getMarketId()));
+
       double positionPrice = getPositionOpeningPrice(newOpenPosition);
       List<OpenPosition> openPositionsForClient = clientPositionStore.get(clientId);
 
@@ -45,16 +52,19 @@ public class OpenPositionsService {
       double newAvailableFunds = calculateNewAvailableFunds(clientAvailableFunds, positionPrice);
       clientService.updateAvailableFunds(clientId, newAvailableFunds);
 
+      log.info("Added new openPosition={}", newOpenPosition);
       return openPositionWithId;
    }
 
-   public Double closeOpenPosition(String clientId, String openPositionToClose, double closingPrice) throws NoAvailableDataException {
+   public Double closeOpenPosition(String clientId, String openPositionToClose) throws NoAvailableDataException, NoMarketPriceAvailableException {
       List<OpenPosition> openPositions = getPositionDataFromMap(clientId);
 
       OpenPosition position = openPositions.stream()
          .filter(pos -> pos.getId().equals(openPositionToClose))
          .findFirst()
          .orElseThrow(() -> new NoAvailableDataException("No position exists with id: " + openPositionToClose));
+
+      double closingPrice = marketDataCache.getCurrentPriceForMarket(position.getMarketId());
 
       double openingPositionPrice = getPositionOpeningPrice(position);
       Double closingProfitAndLoss = calculateNewProfitAndLoss(closingPrice, position.getOpeningPrice(), position.getBuySize());
@@ -68,6 +78,7 @@ public class OpenPositionsService {
       final double closingFunds = calculateClosingFunds(clientId, closingProfitAndLoss, openingPositionPrice);
       clientService.updateAvailableFunds(clientId, closingFunds);
 
+      log.info("Closed openPosition={}, closingProfitAndLoss={}", position, closingProfitAndLoss);
       return closingProfitAndLoss;
    }
 
@@ -170,4 +181,5 @@ public class OpenPositionsService {
       Client client = clientService.getClientData(clientId);
       return client.getAvailableFunds() + openingPositionPrice + closingProfitAndLoss;
    }
+
 }

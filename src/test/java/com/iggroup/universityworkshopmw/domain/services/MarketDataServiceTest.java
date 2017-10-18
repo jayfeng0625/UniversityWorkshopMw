@@ -1,5 +1,6 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
+import com.iggroup.universityworkshopmw.domain.caches.MarketDataCache;
 import com.iggroup.universityworkshopmw.domain.model.Market;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,7 @@ public class MarketDataServiceTest {
    public void setup() {
       //Given
       openPositionsService = mock(OpenPositionsService.class);
-      marketDataService = new MarketDataService(openPositionsService);
+      marketDataService = new MarketDataService(openPositionsService, new MarketDataCache());
    }
 
    @Test

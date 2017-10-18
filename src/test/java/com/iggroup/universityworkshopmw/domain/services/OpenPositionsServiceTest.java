@@ -1,7 +1,9 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
+import com.iggroup.universityworkshopmw.domain.caches.MarketDataCache;
 import com.iggroup.universityworkshopmw.domain.exceptions.InsufficientFundsException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
+import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
 import org.junit.Before;
@@ -14,6 +16,7 @@ import java.util.stream.IntStream;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,11 +27,13 @@ public class OpenPositionsServiceTest {
    private OpenPosition openPosition1, openPosition2, openPosition3, openPosition4, openPosition5, openPosition6;
    private OpenPositionsService openPositionsService;
    private ClientService clientService;
+   private MarketDataCache marketDataCache;
 
    @Before
    public void setUp() {
       clientService = mock(ClientService.class);
-      openPositionsService = new OpenPositionsService(clientService);
+      marketDataCache = mock(MarketDataCache.class);
+      openPositionsService = new OpenPositionsService(clientService, marketDataCache);
       initialiseOpenPositions();
    }
 
@@ -48,7 +53,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldAddOpenPositionsForClientWithNoPositions() throws Exception {
+   public void shouldAddOpenPositionsForClientWithNoPositions() throws Exception, NoMarketPriceAvailableException {
       when(clientService.getClientData("client_1")).thenReturn(createClient("client_1"));
 
       openPositionsService.addOpenPositionForClient("client_1", openPosition1);
@@ -66,7 +71,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldAddNewPositionForClientWithExistingPositions() throws Exception {
+   public void shouldAddNewPositionForClientWithExistingPositions() throws Exception, NoMarketPriceAvailableException {
       when(clientService.getClientData("client_3")).thenReturn(createClient("client_3"));
 
       openPositionsService.addOpenPositionForClient("client_3", openPosition1);
@@ -79,7 +84,8 @@ public class OpenPositionsServiceTest {
    }
 
    @Test(expected = InsufficientFundsException.class)
-   public void shouldThrowExceptionIfClientLacksFundsToTrade() throws Exception {
+   public void shouldThrowExceptionIfClientLacksFundsToTrade() throws Exception, NoMarketPriceAvailableException {
+      when(marketDataCache.getCurrentPriceForMarket(openPosition1.getMarketId())).thenReturn(openPosition1.getOpeningPrice());
       when(clientService.getClientData("client_1")).thenReturn(Client.builder()
             .id("client_1")
             .userName("username")
@@ -90,7 +96,8 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void addOpenPositionForClient_updatedAvailableFunds() throws NoAvailableDataException {
+   public void addOpenPositionForClient_updatedAvailableFunds() throws NoAvailableDataException, NoMarketPriceAvailableException {
+      when(marketDataCache.getCurrentPriceForMarket(openPosition1.getMarketId())).thenReturn(openPosition1.getOpeningPrice());
       when(clientService.getClientData("client_3")).thenReturn(createClient("client_3"));
 
       openPositionsService.addOpenPositionForClient("client_3", openPosition1);
@@ -103,7 +110,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldUpdateProfitAndLossForAllClientsWhenPriceIncreases() throws Exception {
+   public void shouldUpdateProfitAndLossForAllClientsWhenPriceIncreases() throws Exception, NoMarketPriceAvailableException {
       initialiseClientPositions();
       openPositionsService.updateMarketPrice("market_2", 200.00);
 
@@ -127,8 +134,9 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldUpdateProfitAndLossForMultiplePositionsOnTheSameMarket() throws Exception {
+   public void shouldUpdateProfitAndLossForMultiplePositionsOnTheSameMarket() throws Exception, NoMarketPriceAvailableException {
       initialiseClientPositions();
+      when(marketDataCache.getCurrentPriceForMarket(openPosition6.getMarketId())).thenReturn(openPosition6.getOpeningPrice());
       openPositionsService.addOpenPositionForClient("client_1", openPosition6);
 
       openPositionsService.updateMarketPrice("market_1", 200.00);
@@ -139,10 +147,13 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldUpdateProfitAndLossForMultiplePositionsOnTheSameMarketForMultipleClients() throws Exception {
+   public void shouldUpdateProfitAndLossForMultiplePositionsOnTheSameMarketForMultipleClients() throws Exception, NoMarketPriceAvailableException {
       initialiseClientPositions();
+      when(marketDataCache.getCurrentPriceForMarket(openPosition6.getMarketId())).thenReturn(openPosition6.getOpeningPrice());
       openPositionsService.addOpenPositionForClient("client_1", openPosition6);
+      when(marketDataCache.getCurrentPriceForMarket(openPosition6.getMarketId())).thenReturn(openPosition6.getOpeningPrice());
       openPositionsService.addOpenPositionForClient("client_2", openPosition6);
+      when(marketDataCache.getCurrentPriceForMarket(openPosition1.getMarketId())).thenReturn(openPosition1.getOpeningPrice());
       openPositionsService.addOpenPositionForClient("client_2", openPosition1);
 
       openPositionsService.updateMarketPrice("market_1", 200.00);
@@ -156,14 +167,15 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldCloseSpecifiedPosition() throws Exception {
+   public void shouldCloseSpecifiedPosition() throws Exception, NoMarketPriceAvailableException {
       initialiseClientPositions();
+      when(marketDataCache.getCurrentPriceForMarket(openPosition1.getMarketId())).thenReturn(200.0);
       List<OpenPosition> clientPositions = openPositionsService.getOpenPositionsForClient("client_1");
 
       assertOpenPosition(clientPositions.get(0), openPosition1);
       assertOpenPosition(clientPositions.get(1), openPosition2);
 
-      Double finalProfitAndLoss = openPositionsService.closeOpenPosition("client_1", clientPositions.get(0).getId(), 200.00);
+      Double finalProfitAndLoss = openPositionsService.closeOpenPosition("client_1", clientPositions.get(0).getId());
       clientPositions = openPositionsService.getOpenPositionsForClient("client_1");
 
       assertThat(finalProfitAndLoss).isEqualTo(1200.00);
@@ -172,17 +184,18 @@ public class OpenPositionsServiceTest {
    }
 
    @Test(expected = NoAvailableDataException.class)
-   public void shouldThrowExceptionWhenClosingPositionThatDoesntExist() throws Exception {
-      openPositionsService.closeOpenPosition("client_1", "made_up_position", 10.0);
+   public void shouldThrowExceptionWhenClosingPositionThatDoesntExist() throws Exception, NoMarketPriceAvailableException {
+      openPositionsService.closeOpenPosition("client_1", "made_up_position");
    }
 
    @Test
-   public void closeOpenPosition_calculatesAndUpdatedAvailableFunds() throws Exception {
+   public void closeOpenPosition_calculatesAndUpdatedAvailableFunds() throws Exception, NoMarketPriceAvailableException {
       when(clientService.getClientData("client_1")).thenReturn(createClient("client_1"));
+      when(marketDataCache.getCurrentPriceForMarket(openPosition1.getMarketId())).thenReturn(250.0);
       openPositionsService.addOpenPositionForClient("client_1", openPosition1);
       List<OpenPosition> clientPositions = openPositionsService.getOpenPositionsForClient("client_1");
 
-      openPositionsService.closeOpenPosition("client_1", clientPositions.get(0).getId(), 250.00);
+      openPositionsService.closeOpenPosition("client_1", clientPositions.get(0).getId());
 
       ArgumentCaptor<String> clientIdCaptor2 = ArgumentCaptor.forClass(String.class);
       ArgumentCaptor<Double> runningProfitAndLossCaptor = ArgumentCaptor.forClass(Double.class);
@@ -268,8 +281,11 @@ public class OpenPositionsServiceTest {
       newArrayList(openPosition1, openPosition2).stream()
             .forEach(openPosition -> {
                try {
+                  mockMarketDataCacheCall(openPosition);
                   openPositionsService.addOpenPositionForClient("client_1", openPosition);
                } catch (NoAvailableDataException e) {
+                  e.printStackTrace();
+               } catch (NoMarketPriceAvailableException e) {
                   e.printStackTrace();
                }
             });
@@ -277,8 +293,11 @@ public class OpenPositionsServiceTest {
       newArrayList(openPosition3, openPosition2, openPosition5).stream()
             .forEach(openPosition -> {
                try {
+                  mockMarketDataCacheCall(openPosition);
                   openPositionsService.addOpenPositionForClient("client_2", openPosition);
                } catch (NoAvailableDataException e) {
+                  e.printStackTrace();
+               } catch (NoMarketPriceAvailableException e) {
                   e.printStackTrace();
                }
             });
@@ -286,11 +305,18 @@ public class OpenPositionsServiceTest {
       newArrayList(openPosition4).stream()
             .forEach(openPosition -> {
                try {
+                  mockMarketDataCacheCall(openPosition);
                   openPositionsService.addOpenPositionForClient("client_3", openPosition);
                } catch (NoAvailableDataException e) {
                   e.printStackTrace();
+               } catch (NoMarketPriceAvailableException e) {
+                  e.printStackTrace();
                }
             });
+   }
+
+   private void mockMarketDataCacheCall(OpenPosition openPosition) throws NoMarketPriceAvailableException {
+      when(marketDataCache.getCurrentPriceForMarket(openPosition.getMarketId())).thenReturn(openPosition.getOpeningPrice());
    }
 
    private Client createClient(String clientId) {
@@ -309,4 +335,6 @@ public class OpenPositionsServiceTest {
       assertThat(resultingOpenPosition.getOpeningPrice()).isEqualTo(openPosition.getOpeningPrice());
    }
 
+
+   // TODO: 17/10/2017 Test the exception for now marketprice
 }

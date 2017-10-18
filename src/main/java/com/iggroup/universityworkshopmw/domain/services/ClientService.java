@@ -85,7 +85,6 @@ public class ClientService {
       }
    }
 
-
    private void updatingAvailableFunds(double updatedAvailableFunds, Client client) {
       log.info("Updating availableFunds for clientId={}, oldAvailableFunds={}, updatedAvailableFunds={}", client.getId(), client.getAvailableFunds(), updatedAvailableFunds);
       client.setAvailableFunds(updatedAvailableFunds);

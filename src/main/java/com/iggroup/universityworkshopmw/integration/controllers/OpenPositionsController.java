@@ -2,6 +2,7 @@ package com.iggroup.universityworkshopmw.integration.controllers;
 
 import com.iggroup.universityworkshopmw.domain.exceptions.InsufficientFundsException;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
+import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
 import com.iggroup.universityworkshopmw.domain.services.OpenPositionsService;
 import com.iggroup.universityworkshopmw.integration.dto.OpenPositionDto;
@@ -73,25 +74,30 @@ public class OpenPositionsController {
       } catch (Exception e) {
          log.info("Could not add an open position for client={}, ", clientId, e);
          return new ResponseEntity<>("Something went wrong when opening a position", INTERNAL_SERVER_ERROR);
+      } catch (NoMarketPriceAvailableException e) {
+         log.info("No available price for marketId={}, ", openPositionDto.getMarketId(), e);
+         return new ResponseEntity<>("No available price for marketId=" + openPositionDto.getMarketId(), BAD_REQUEST);
       }
    }
 
    @ApiOperation(value = "Delete an open position",
       notes = "Deletes an open position for a given client. Responds with closing profit and loss",
       response = Double.class)
-   @PostMapping("/{clientId}/{openPositionId}/{closingPrice}")
+   @PostMapping("/{clientId}/{openPositionId}")
    public ResponseEntity<?> closeOpenPosition(@PathVariable("clientId") String clientId,
-                                              @PathVariable("openPositionId") String openPositionId,
-                                              @PathVariable("closingPrice") String closingPrice) {
+                                              @PathVariable("openPositionId") String openPositionId) {
       try {
-         Double response = openPositionsService.closeOpenPosition(clientId, openPositionId, Double.parseDouble(closingPrice));
+         Double response = openPositionsService.closeOpenPosition(clientId, openPositionId);
          return new ResponseEntity<>(response, OK);
       } catch (NoAvailableDataException e) {
          log.info("Client={} had no open positions, or no positions matching clientId={}, ", clientId, openPositionId, e);
          return new ResponseEntity<>("Client: " + clientId + " had no open positions or no positions matching clientId: " + openPositionId, BAD_REQUEST);
       } catch (Exception e) {
-         log.info("Could not delete position={}, for client={}, at price={}, ", openPositionId, clientId, closingPrice, e);
-         return new ResponseEntity<>("Could not close position: " + openPositionId + " for client: " + clientId + " at price: " + closingPrice, INTERNAL_SERVER_ERROR);
+         log.info("Could not delete position={}, for client={}, ", openPositionId, clientId, e);
+         return new ResponseEntity<>("Could not close position: " + openPositionId + " for client: " + clientId, INTERNAL_SERVER_ERROR);
+      } catch (NoMarketPriceAvailableException e) {
+         log.info("No available price for open position's market, ", e);
+         return new ResponseEntity<>("No available price for open position's market.", BAD_REQUEST);
       }
    }
 }

@@ -3,6 +3,7 @@ package com.iggroup.universityworkshopmw.domain.model;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -13,6 +14,7 @@ public class OpenPosition {
    private String id;
    private String marketId;
    private Double profitAndLoss;
+   @Setter
    private Double openingPrice;
    private int buySize;
 }
