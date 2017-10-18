@@ -24,11 +24,11 @@ public class OpenPositionTransformerTest {
 
    private OpenPositionDto createOpenPositionDto() {
       return OpenPositionDto.builder()
-         .id("open_position_id")
-         .marketId("market_id")
-         .profitAndLoss(1234.00)
-         .openingPrice(100.00)
-         .buySize(10)
-         .build();
+            .id("open_position_id")
+            .marketId("market_id")
+            .profitAndLoss(1234.00)
+            .openingPrice(100.00)
+            .buySize(10)
+            .build();
    }
 }

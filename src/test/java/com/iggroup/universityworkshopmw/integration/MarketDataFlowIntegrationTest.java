@@ -1,6 +1,7 @@
 package com.iggroup.universityworkshopmw.integration;
 
 import com.iggroup.universityworkshopmw.TestHelper;
+import com.iggroup.universityworkshopmw.domain.caches.MarketDataCache;
 import com.iggroup.universityworkshopmw.domain.services.ClientService;
 import com.iggroup.universityworkshopmw.domain.services.MarketDataService;
 import com.iggroup.universityworkshopmw.domain.services.OpenPositionsService;
@@ -22,8 +23,9 @@ public class MarketDataFlowIntegrationTest {
 
    //Given
    private ClientService clientService = spy(new ClientService());
-   private OpenPositionsService openPositionsService = new OpenPositionsService(clientService);
-   private MarketDataService marketDataService = new MarketDataService(openPositionsService);
+   private MarketDataCache marketDataCache = spy(new MarketDataCache());
+   private OpenPositionsService openPositionsService = new OpenPositionsService(clientService, marketDataCache);
+   private MarketDataService marketDataService = new MarketDataService(openPositionsService, marketDataCache);
    private MarketDataController marketDataController = new MarketDataController(marketDataService);
    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(marketDataController).build();
 
