@@ -13,8 +13,8 @@ import lombok.ToString;
 public class OpenPosition {
    private String id;
    private String marketId;
-   private Double profitAndLoss;
+   private double profitAndLoss;
    @Setter
-   private Double openingPrice;
+   private double openingPrice;
    private int buySize;
 }

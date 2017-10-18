@@ -43,22 +43,24 @@ public class OpenPositionsService {
    }
 
    public OpenPosition addOpenPositionForClient(String clientId, OpenPosition newOpenPosition) throws InsufficientFundsException, NoMarketPriceAvailableException, MissingBuySizeException, NoAvailableDataException {
-      if (newOpenPosition.getBuySize() == 0) {
+      OpenPosition newOpenPositionCopy = OpenPosition.builder().buySize(newOpenPosition.getBuySize()).marketId(newOpenPosition.getMarketId()).build();
+
+      if (newOpenPositionCopy.getBuySize() == 0) {
          log.error("Buy size is ZERO. Cannot open a position with size ZERO.");
          throw new MissingBuySizeException("Buy size is ZERO. Cannot open a position with size ZERO.");
       }
-      newOpenPosition.setOpeningPrice(marketDataCache.getCurrentPriceForMarket(newOpenPosition.getMarketId()));
+      newOpenPositionCopy.setOpeningPrice(marketDataCache.getCurrentPriceForMarket(newOpenPositionCopy.getMarketId()));
 
-      double positionPrice = getPositionOpeningPrice(newOpenPosition);
+      double positionPrice = getPositionOpeningPrice(newOpenPositionCopy);
       List<OpenPosition> openPositionsForClient = clientPositionStore.get(clientId);
 
       double clientAvailableFunds = checkClientAvailableFunds(clientId, positionPrice);
-      OpenPosition openPositionWithId = updateStoreWithNewPosition(clientId, newOpenPosition, openPositionsForClient);
+      OpenPosition openPositionWithId = updateStoreWithNewPosition(clientId, newOpenPositionCopy, openPositionsForClient);
 
       double newAvailableFunds = calculateNewAvailableFunds(clientAvailableFunds, positionPrice);
       clientService.updateAvailableFunds(clientId, roundToTwoDecimalPlaces(newAvailableFunds));
 
-      log.info("Added new openPosition={}", newOpenPosition);
+      log.info("Added new openPosition={}", newOpenPositionCopy);
       return openPositionWithId;
    }
 

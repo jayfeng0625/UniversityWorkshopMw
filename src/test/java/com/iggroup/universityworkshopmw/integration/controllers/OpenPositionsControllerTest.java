@@ -3,6 +3,7 @@ package com.iggroup.universityworkshopmw.integration.controllers;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.OpenPosition;
 import com.iggroup.universityworkshopmw.domain.services.OpenPositionsService;
+import com.iggroup.universityworkshopmw.integration.dto.AddOpenPositionDto;
 import com.iggroup.universityworkshopmw.integration.dto.OpenPositionDto;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,7 +77,7 @@ public class OpenPositionsControllerTest {
 
    @Test
    public void createsAnOpenPosition() throws Exception, NoMarketPriceAvailableException {
-      OpenPositionDto openPositionDto = createOpenPositionDto();
+      AddOpenPositionDto openPositionDto = createAddOpenPositionDto();
       OpenPosition openPosition = transform(openPositionDto);
       when(openPositionsService.addOpenPositionForClient(eq("client_12345"), any(OpenPosition.class)))
          .thenReturn(openPosition);
@@ -117,6 +118,13 @@ public class OpenPositionsControllerTest {
          .openingPrice(1234.22)
          .buySize(50)
          .build();
+   }
+
+   private AddOpenPositionDto createAddOpenPositionDto() {
+      return AddOpenPositionDto.builder()
+            .marketId("market_1")
+            .buySize(50)
+            .build();
    }
 
    private List<OpenPosition> createOpenPositions() {
