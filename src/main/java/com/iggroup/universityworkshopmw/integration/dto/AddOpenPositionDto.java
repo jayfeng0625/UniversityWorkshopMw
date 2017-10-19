@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddOpenPositionDto {
-
    private String marketId;
    private Integer buySize;
-
 }

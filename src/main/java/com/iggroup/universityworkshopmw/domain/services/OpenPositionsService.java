@@ -90,8 +90,8 @@ public class OpenPositionsService {
       return closingProfitAndLoss;
    }
 
-   public void updateMarketPrice(String marketId, Double newValue) {
-      clientPositionStore.keySet().stream()
+   void updateMarketPrice(String marketId, Double newValue) {
+      clientPositionStore.keySet()
             .forEach(clientId -> {
                List<OpenPosition> openPositions = clientPositionStore.get(clientId);
                openPositions.stream()

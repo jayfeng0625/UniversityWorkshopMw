@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ public class PriceGeneratorService {
    private void updateMarketPrices() {
       List<Map.Entry<String, Market>> updateSubList = marketDataService.getShuffledMapSubset();
 
-      updateSubList.stream().forEach(entry -> {
+      updateSubList.forEach(entry -> {
          Market entryValue = entry.getValue();
          String id = entryValue.getId();
          Double oldPrice = entryValue.getCurrentPrice();

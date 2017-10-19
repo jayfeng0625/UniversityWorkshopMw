@@ -11,12 +11,10 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Builder
 public class Client {
-
    private String id;
    private String userName;
    @Setter
    private double availableFunds;
    @Setter
    private double runningProfitAndLoss;
-
 }

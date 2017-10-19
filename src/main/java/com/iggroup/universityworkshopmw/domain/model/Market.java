@@ -11,9 +11,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Builder
 public class Market {
-
    private String id;
    private MarketName marketName;
    private double currentPrice;
-
 }

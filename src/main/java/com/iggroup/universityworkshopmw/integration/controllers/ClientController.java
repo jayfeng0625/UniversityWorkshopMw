@@ -22,8 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.net.HttpURLConnection.HTTP_BAD_GATEWAY;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -40,15 +41,15 @@ public class ClientController {
    private final ClientService clientService;
 
    @ApiOperation(value = "Create a new client",
-      notes = "Creates a single client",
-      response = ClientDto.class)
+         notes = "Creates a single client",
+         response = ClientDto.class)
    @ApiResponses(value = {
-      @ApiResponse(code = HTTP_OK,
-         message = "Successfully created a client"),
-      @ApiResponse(code = HTTP_BAD_REQUEST,
-         message = "Couldn't recognise request"),
-      @ApiResponse(code = HTTP_BAD_GATEWAY,
-         message = "Couldn't create client")
+         @ApiResponse(code = HTTP_OK,
+               message = "Successfully created a client"),
+         @ApiResponse(code = HTTP_BAD_REQUEST,
+               message = "Couldn't recognise request"),
+         @ApiResponse(code = HTTP_INTERNAL_ERROR,
+               message = "Couldn't create client")
    })
    @PostMapping("/createClient")
    public ResponseEntity<?> createClient(@RequestBody CreateClientDto clientDto) {
@@ -76,7 +77,9 @@ public class ClientController {
                message = "Successfully retrieved client data"),
          @ApiResponse(code = HTTP_BAD_REQUEST,
                message = "Couldn't recognise request"),
-         @ApiResponse(code = HTTP_BAD_GATEWAY,
+         @ApiResponse(code = HTTP_NOT_FOUND,
+               message = "Couldn't find client for clientId provided"),
+         @ApiResponse(code = HTTP_INTERNAL_ERROR,
                message = "Couldn't get client data")
    })
    @GetMapping("/{clientId}")

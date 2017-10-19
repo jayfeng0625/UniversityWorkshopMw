@@ -11,17 +11,17 @@ public class OpenPositionDtoTransformer {
 
    public static List<OpenPositionDto> transform(List<OpenPosition> openPositions) {
       return openPositions.stream()
-         .map(OpenPositionDtoTransformer::transformDto)
-         .collect(toList());
+            .map(OpenPositionDtoTransformer::transformDto)
+            .collect(toList());
    }
 
    private static OpenPositionDto transformDto(OpenPosition openPosition) {
       return OpenPositionDto.builder()
-         .id(openPosition.getId())
-         .marketId(openPosition.getMarketId())
-         .profitAndLoss(openPosition.getProfitAndLoss())
-         .openingPrice(openPosition.getOpeningPrice())
-         .buySize(openPosition.getBuySize())
-         .build();
+            .id(openPosition.getId())
+            .marketId(openPosition.getMarketId())
+            .profitAndLoss(openPosition.getProfitAndLoss())
+            .openingPrice(openPosition.getOpeningPrice())
+            .buySize(openPosition.getBuySize())
+            .build();
    }
 }

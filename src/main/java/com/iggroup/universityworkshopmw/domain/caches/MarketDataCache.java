@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
-@Component
 @Slf4j
+@Component
 public class MarketDataCache {
 
    private Map<String, Market> marketIdToMarketModelMap = new ConcurrentHashMap<>();

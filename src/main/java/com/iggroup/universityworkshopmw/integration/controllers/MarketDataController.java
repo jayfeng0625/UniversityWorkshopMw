@@ -6,6 +6,8 @@ import com.iggroup.universityworkshopmw.integration.dto.MarketDto;
 import com.iggroup.universityworkshopmw.integration.transformers.MarketDataTransformer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -30,6 +34,14 @@ public class MarketDataController {
 
    @ApiOperation(value = "Get all market data",
          notes = "Returns a list of markets")
+   @ApiResponses(value = {
+         @ApiResponse(code = HTTP_OK,
+               message = "Successfully retrieved market data"),
+         @ApiResponse(code = HTTP_BAD_REQUEST,
+               message = "Couldn't recognise request"),
+         @ApiResponse(code = HTTP_INTERNAL_ERROR,
+               message = "Couldn't get market data")
+   })
    @GetMapping("/allMarkets")
    public ResponseEntity<?> getAllMarketData() {
       try {
