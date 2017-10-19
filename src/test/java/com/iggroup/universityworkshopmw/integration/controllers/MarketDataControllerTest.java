@@ -9,9 +9,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.iggroup.universityworkshopmw.TestHelper.APPLICATION_JSON_UTF8;
 import static com.iggroup.universityworkshopmw.domain.enums.MarketName.GOLD;
@@ -29,7 +27,6 @@ public class MarketDataControllerTest {
    private MockMvc mockMvc;
    private MarketDataService marketDataService;
    private MarketDataController marketDataController;
-
 
    @Before
    public void setup() {

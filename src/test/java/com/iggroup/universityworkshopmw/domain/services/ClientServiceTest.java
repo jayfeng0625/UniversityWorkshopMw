@@ -6,7 +6,7 @@ import com.iggroup.universityworkshopmw.domain.model.Client;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClientServiceTest {
 
@@ -19,8 +19,8 @@ public class ClientServiceTest {
 
    @Test
    public void storeNewClient_assignsUniqueIdPerAddition() throws DuplicatedDataException {
-      Client client1 = createClient("", "userName1", 0, 0);
-      Client client2 = createClient("", "userName2", 0, 0);
+      Client client1 = createClient("userName1");
+      Client client2 = createClient("userName2");
 
       Client returnClient1 = clientService.storeNewClient(client1);
       Client returnClient2 = clientService.storeNewClient(client2);
@@ -32,7 +32,7 @@ public class ClientServiceTest {
 
    @Test
    public void storeNewClient_setsCorrectInitialValues() throws DuplicatedDataException {
-      Client client1 = createClient("", "userName1", 0, 0);
+      Client client1 = createClient("userName1");
 
       Client returnClient1 = clientService.storeNewClient(client1);
 
@@ -42,14 +42,14 @@ public class ClientServiceTest {
 
    @Test
    public void getClientData_getsDataForClientId() throws NoAvailableDataException, DuplicatedDataException {
-      final Client expected = createClient("", "userName1", 0, 0);
+      final Client expected = createClient("userName1");
       Client returnClient1 = clientService.storeNewClient(expected);
       String clientId = returnClient1.getId();
 
       Client actual = clientService.getClientData(clientId);
 
       assertThat(actual).isEqualToIgnoringGivenFields(expected, "id", "availableFunds");
-      assertThat(actual.getAvailableFunds()).isEqualTo( 10000.0);
+      assertThat(actual.getAvailableFunds()).isEqualTo(10000.0);
    }
 
    @Test(expected = NoAvailableDataException.class)
@@ -61,7 +61,7 @@ public class ClientServiceTest {
 
    @Test
    public void updateAvailableFunds_updatesAvailableFunds() throws NoAvailableDataException, DuplicatedDataException {
-      Client returnClient1 = clientService.storeNewClient(createClient("", "userName1", 0, 0));
+      Client returnClient1 = clientService.storeNewClient(createClient("userName1"));
       String clientId = returnClient1.getId();
       double availableFunds = returnClient1.getAvailableFunds();
       double fundsUpdate = availableFunds - 200;
@@ -81,11 +81,11 @@ public class ClientServiceTest {
 
    @Test
    public void updateRunningProfitAndLoss_updatesAvailableFundsAndRunningProfitAndLoss() throws NoAvailableDataException, DuplicatedDataException {
-      Client client = clientService.storeNewClient(createClient("", "userName1", 0, 0));
+      Client client = clientService.storeNewClient(createClient("userName1"));
       String clientId = client.getId();
       double initialAvailableFunds = client.getAvailableFunds();
-      // Account for a previous profit and loss calculation
-      clientService.updateRunningProfitAndLoss(clientId,5);
+      // To account for a previous profit and loss calculation
+      clientService.updateRunningProfitAndLoss(clientId, 5);
       double sumOfProfitAndLoss = 500;
 
       clientService.updateRunningProfitAndLoss(clientId, sumOfProfitAndLoss);
@@ -102,12 +102,12 @@ public class ClientServiceTest {
       clientService.updateRunningProfitAndLoss(clientId, 800);
    }
 
-   private Client createClient(String clientId, String userName, double funds, double profitAndLoss) {
+   private Client createClient(String userName) {
       return Client.builder()
-         .id(clientId)
-         .userName(userName)
-         .availableFunds(funds)
-         .runningProfitAndLoss(funds)
-         .build();
+            .id("clientId")
+            .userName(userName)
+            .availableFunds(0)
+            .runningProfitAndLoss(0)
+            .build();
    }
 }

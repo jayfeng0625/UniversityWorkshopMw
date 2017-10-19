@@ -13,10 +13,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.iggroup.universityworkshopmw.TestHelper.APPLICATION_JSON_UTF8;
 import static com.iggroup.universityworkshopmw.TestHelper.convertObjectToJsonBytes;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -48,14 +46,14 @@ public class ClientControllerTest {
    @Test
    public void createClient_returnsOkCodeAndClientIdAndFunds() throws Exception {
       CreateClientDto clientDto = CreateClientDto.builder()
-         .userName("userName")
-         .build();
+            .userName("userName")
+            .build();
       Client clientAdded = Client.builder()
-         .id("client_12345")
-         .userName("username")
-         .availableFunds(Double.valueOf(400))
-         .runningProfitAndLoss(0)
-         .build();
+            .id("client_12345")
+            .userName("username")
+            .availableFunds(400.0)
+            .runningProfitAndLoss(0)
+            .build();
       when(clientService.storeNewClient(any(Client.class))).thenReturn(clientAdded);
 
       mockMvc.perform(post("/client/createClient")
@@ -73,17 +71,17 @@ public class ClientControllerTest {
       verifyNoMoreInteractions(clientService);
 
       Client client = clientArgumentCaptor.getValue();
-      assertNull(client.getId());
-      assertThat(client.getAvailableFunds(), is(0.0));
-      assertThat(client.getRunningProfitAndLoss(), is(0.0));
-      assertThat(client.getUserName(), is("userName"));
+      assertThat(client.getId()).isNull();
+      assertThat(client.getAvailableFunds()).isEqualTo(0.0);
+      assertThat(client.getRunningProfitAndLoss()).isEqualTo(0.0);
+      assertThat(client.getUserName()).isEqualTo("userName");
    }
 
    @Test
    public void createClient_handlesAnyException_returnsServerErrorAndInfoString() throws Exception {
       CreateClientDto clientDto = CreateClientDto.builder()
-         .userName("userName")
-         .build();
+            .userName("userName")
+            .build();
       when(clientService.storeNewClient(any(Client.class))).thenThrow(new RuntimeException("Server exception!"));
 
       MvcResult mvcResult = mockMvc.perform(post("/client/createClient")
@@ -93,7 +91,7 @@ public class ClientControllerTest {
             .andExpect(status().isInternalServerError()).andReturn();
 
       final String content = mvcResult.getResponse().getContentAsString();
-      assertEquals("Something went wrong when creating a new client", content);
+      assertThat("Something went wrong when creating a new client").isEqualTo(content);
    }
 
    @Test
@@ -101,12 +99,12 @@ public class ClientControllerTest {
       Client retrievedClient = Client.builder()
             .id("client_12345")
             .userName("username")
-            .availableFunds(Double.valueOf(400))
+            .availableFunds(400.0)
             .runningProfitAndLoss(0)
             .build();
       when(clientService.getClientData(anyString())).thenReturn(retrievedClient);
 
-       mockMvc.perform(get("/client/client_12345"))
+      mockMvc.perform(get("/client/client_12345"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", is("client_12345")))
@@ -119,7 +117,7 @@ public class ClientControllerTest {
       verifyNoMoreInteractions(clientService);
 
       String id = clientIdCaptor.getValue();
-      assertThat(id, is("client_12345"));
+      assertThat(id).isEqualTo("client_12345");
    }
 
    @Test
@@ -130,7 +128,7 @@ public class ClientControllerTest {
             .andExpect(status().isInternalServerError()).andReturn();
 
       final String content = mvcResult.getResponse().getContentAsString();
-      assertEquals("Something went wrong when retrieving client data", content);
+      assertThat("Something went wrong when retrieving client data").isEqualTo(content);
    }
 
    @Test
@@ -141,6 +139,6 @@ public class ClientControllerTest {
             .andExpect(status().isNotFound()).andReturn();
 
       final String content = mvcResult.getResponse().getContentAsString();
-      assertEquals("No available client data for clientId=client_12345", content);
+      assertThat("No available client data for clientId=client_12345").isEqualTo(content);
    }
 }

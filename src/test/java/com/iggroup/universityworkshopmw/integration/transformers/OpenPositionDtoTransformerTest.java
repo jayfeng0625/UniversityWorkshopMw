@@ -8,8 +8,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.iggroup.universityworkshopmw.integration.transformers.OpenPositionDtoTransformer.transform;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class OpenPositionDtoTransformerTest {
 
@@ -18,11 +17,11 @@ public class OpenPositionDtoTransformerTest {
       List<OpenPosition> openPositions = createOpenPositions();
       List<OpenPositionDto> openPositionDtos = transform(openPositions);
 
-      assertThat(openPositionDtos.get(0).getId(), is("open_position_id"));
-      assertThat(openPositionDtos.get(0).getMarketId(), is("market_id"));
-      assertThat(openPositionDtos.get(0).getProfitAndLoss(), is(1234.00));
-      assertThat(openPositionDtos.get(0).getOpeningPrice(), is(100.00));
-      assertThat(openPositionDtos.get(0).getBuySize(), is(10));
+      assertThat(openPositionDtos.get(0).getId()).isEqualTo("open_position_id");
+      assertThat(openPositionDtos.get(0).getMarketId()).isEqualTo("market_id");
+      assertThat(openPositionDtos.get(0).getProfitAndLoss()).isEqualTo(1234.00);
+      assertThat(openPositionDtos.get(0).getOpeningPrice()).isEqualTo(100.00);
+      assertThat(openPositionDtos.get(0).getBuySize()).isEqualTo(10);
    }
 
    private List<OpenPosition> createOpenPositions() {
@@ -31,11 +30,11 @@ public class OpenPositionDtoTransformerTest {
 
    private OpenPosition createOpenPosition() {
       return OpenPosition.builder()
-         .id("open_position_id")
-         .marketId("market_id")
-         .profitAndLoss(1234.00)
-         .openingPrice(100.00)
-         .buySize(10)
-         .build();
+            .id("open_position_id")
+            .marketId("market_id")
+            .profitAndLoss(1234.00)
+            .openingPrice(100.00)
+            .buySize(10)
+            .build();
    }
 }
