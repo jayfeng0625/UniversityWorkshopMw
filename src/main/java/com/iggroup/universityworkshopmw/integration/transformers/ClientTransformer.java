@@ -7,8 +7,8 @@ public class ClientTransformer {
 
    public static Client transform(CreateClientDto clientDto) {
       return Client.builder()
-         .userName(clientDto.getUserName())
-         .build();
+            .userName(clientDto.getUserName())
+            .build();
    }
 
 }

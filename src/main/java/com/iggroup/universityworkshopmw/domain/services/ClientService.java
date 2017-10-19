@@ -1,8 +1,8 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
 import com.iggroup.universityworkshopmw.domain.exceptions.DuplicatedDataException;
-import com.iggroup.universityworkshopmw.domain.helpers.Helper;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoAvailableDataException;
+import com.iggroup.universityworkshopmw.domain.helpers.Helper;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,11 +27,11 @@ public class ClientService {
       String uniqueId = checkIfDuplicateClientId();
 
       Client enrichedClient = Client.builder()
-         .id(uniqueId)
-         .userName(client.getUserName())
-         .availableFunds(INITIAL_FUNDS)
-         .runningProfitAndLoss(0)
-         .build();
+            .id(uniqueId)
+            .userName(client.getUserName())
+            .availableFunds(INITIAL_FUNDS)
+            .runningProfitAndLoss(0)
+            .build();
       clientIdToClientModelMap.put(uniqueId, enrichedClient);
       log.info("Added new client={}", enrichedClient);
       return enrichedClient;
@@ -49,7 +49,7 @@ public class ClientService {
       clientIdToClientModelMap.put(client.getId(), client);
    }
 
-   public void updateRunningProfitAndLoss(String clientId, double sumOfPositionProfitAndLoss) throws NoAvailableDataException {
+   void updateRunningProfitAndLoss(String clientId, double sumOfPositionProfitAndLoss) throws NoAvailableDataException {
       Client client = getClientDataFromMap(clientId);
       double oldProfitAndLoss = client.getRunningProfitAndLoss();
 

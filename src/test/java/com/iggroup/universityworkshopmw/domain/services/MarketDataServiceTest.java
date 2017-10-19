@@ -15,12 +15,11 @@ import static org.mockito.Mockito.mock;
 public class MarketDataServiceTest {
 
    private MarketDataService marketDataService;
-   private OpenPositionsService openPositionsService;
 
    @Before
    public void setup() {
       //Given
-      openPositionsService = mock(OpenPositionsService.class);
+      OpenPositionsService openPositionsService = mock(OpenPositionsService.class);
       marketDataService = new MarketDataService(openPositionsService, new MarketDataCache());
    }
 

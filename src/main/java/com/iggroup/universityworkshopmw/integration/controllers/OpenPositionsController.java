@@ -12,17 +12,29 @@ import com.iggroup.universityworkshopmw.integration.transformers.OpenPositionDto
 import com.iggroup.universityworkshopmw.integration.transformers.OpenPositionTransformer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @Api(value = "/openPositions", description = "Operations relating to open positions")
@@ -34,9 +46,19 @@ public class OpenPositionsController {
    private final OpenPositionsService openPositionsService;
 
    @ApiOperation(value = "Get all open positions for client",
-      notes = "Returns all open positions for a given clientId",
-      response = OpenPositionDto.class,
-      responseContainer = "List")
+         notes = "Returns all open positions for a given clientId",
+         response = OpenPositionDto.class,
+         responseContainer = "List")
+   @ApiResponses(value = {
+         @ApiResponse(code = HTTP_OK,
+               message = "Successfully retrieved position data"),
+         @ApiResponse(code = HTTP_BAD_REQUEST,
+               message = "Couldn't recognise request"),
+         @ApiResponse(code = HTTP_NOT_FOUND,
+               message = "Couldn't find positions for client"),
+         @ApiResponse(code = HTTP_INTERNAL_ERROR,
+               message = "Couldn't get position data")
+   })
    @GetMapping("/{clientId}")
    public ResponseEntity<?> getOpenPositions(@PathVariable("clientId") String clientId) {
       try {
@@ -46,16 +68,26 @@ public class OpenPositionsController {
          return new ResponseEntity<>(responseBody, OK);
       } catch (NoAvailableDataException e) {
          log.info("No open positions for client={}, ", clientId, e);
-         return new ResponseEntity<>("No open positions were available for client: " + clientId, BAD_REQUEST);
+         return new ResponseEntity<>("No open positions were available for client: " + clientId, NOT_FOUND);
       } catch (Exception e) {
          log.info("Could not retrieve open positions for client={}, ", clientId, e);
          return new ResponseEntity<>("Something went wrong while getting client positions", INTERNAL_SERVER_ERROR);
       }
    }
 
-   @ApiOperation(value =  "Create an open position",
-      notes = "Create a new position for a given client",
-      response = String.class)
+   @ApiOperation(value = "Create an open position",
+         notes = "Create a new position for a given client",
+         response = String.class)
+   @ApiResponses(value = {
+         @ApiResponse(code = HTTP_OK,
+               message = "Successfully opened position"),
+         @ApiResponse(code = HTTP_BAD_REQUEST,
+               message = "Couldn't recognise request"),
+         @ApiResponse(code = HTTP_NOT_FOUND,
+               message = "Couldn't find data needed to open position"),
+         @ApiResponse(code = HTTP_INTERNAL_ERROR,
+               message = "Couldn't open position")
+   })
    @PostMapping("/{clientId}")
    public ResponseEntity<?> addOpenPosition(@PathVariable("clientId") String clientId,
                                             @RequestBody AddOpenPositionDto openPositionDto) {
@@ -71,7 +103,7 @@ public class OpenPositionsController {
          return new ResponseEntity<>("Client: " + clientId + " lacked sufficient funds to trade", BAD_REQUEST);
       } catch (NoAvailableDataException e) {
          log.info("Could not open position for client={}, ", clientId, e);
-         return new ResponseEntity<>("Could not open position for clientId: " + clientId, BAD_REQUEST);
+         return new ResponseEntity<>("Could not open position for clientId: " + clientId, NOT_FOUND);
       } catch (NoMarketPriceAvailableException e) {
          log.info("No available price for marketId={}, ", openPositionDto.getMarketId(), e);
          return new ResponseEntity<>("No available price for marketId=" + openPositionDto.getMarketId(), BAD_REQUEST);
@@ -85,8 +117,18 @@ public class OpenPositionsController {
    }
 
    @ApiOperation(value = "Delete an open position",
-      notes = "Deletes an open position for a given client. Responds with closing profit and loss",
-      response = Double.class)
+         notes = "Deletes an open position for a given client. Responds with closing profit and loss",
+         response = Double.class)
+   @ApiResponses(value = {
+         @ApiResponse(code = HTTP_OK,
+               message = "Successfully closed position"),
+         @ApiResponse(code = HTTP_BAD_REQUEST,
+               message = "Couldn't recognise request"),
+         @ApiResponse(code = HTTP_NOT_FOUND,
+               message = "Couldn't find position for positionID provided"),
+         @ApiResponse(code = HTTP_INTERNAL_ERROR,
+               message = "Couldn't close position")
+   })
    @PostMapping("/{clientId}/{openPositionId}")
    public ResponseEntity<?> closeOpenPosition(@PathVariable("clientId") String clientId,
                                               @PathVariable("openPositionId") String openPositionId) {
@@ -95,7 +137,7 @@ public class OpenPositionsController {
          return new ResponseEntity<>(response, OK);
       } catch (NoAvailableDataException e) {
          log.info("Client={} had no open positions, or no positions matching clientId={}, ", clientId, openPositionId, e);
-         return new ResponseEntity<>("Client: " + clientId + " had no open positions or no positions matching id: " + openPositionId, BAD_REQUEST);
+         return new ResponseEntity<>("Client: " + clientId + " had no open positions or no positions matching id: " + openPositionId, NOT_FOUND);
       } catch (NoMarketPriceAvailableException e) {
          log.info("No available price for open position's market, ", e);
          return new ResponseEntity<>("No available price for open position's market.", BAD_REQUEST);

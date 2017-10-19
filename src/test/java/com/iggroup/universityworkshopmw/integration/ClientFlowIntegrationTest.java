@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static com.iggroup.universityworkshopmw.TestHelper.APPLICATION_JSON_UTF8;
 import static com.iggroup.universityworkshopmw.TestHelper.convertObjectToJsonBytes;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.times;
@@ -52,11 +52,11 @@ public class ClientFlowIntegrationTest {
    @Test
    public void clientFlow() throws Exception {
       ClientDto clientDto = ClientDto.builder()
-         .id(null)
-         .userName("userName")
-         .availableFunds(null)
-         .runningProfitAndLoss(null)
-         .build();
+            .id(null)
+            .userName("userName")
+            .availableFunds(null)
+            .runningProfitAndLoss(null)
+            .build();
 
       String clientId = mockCreateClient(clientDto);
       assertClient();
@@ -69,9 +69,9 @@ public class ClientFlowIntegrationTest {
 
    private String mockClientDataException() throws Exception {
       MvcResult mvcResultException = mockMvc
-         .perform(get("/client/client_12345"))
-         .andExpect(status().isNotFound())
-         .andReturn();
+            .perform(get("/client/client_12345"))
+            .andExpect(status().isNotFound())
+            .andReturn();
 
       return mvcResultException.getResponse().getContentAsString();
    }
@@ -89,12 +89,12 @@ public class ClientFlowIntegrationTest {
 
    private String mockGetClient(String clientId) throws Exception {
       MvcResult mvcResultFunds = mockMvc
-         .perform(get("/client/" + clientId))
-         .andExpect(status().isOk())
-         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-         .andExpect(jsonPath("$.id", containsString("client_")))
-         .andExpect(jsonPath("$.availableFunds", is(10000.0)))
-         .andReturn();
+            .perform(get("/client/" + clientId))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", containsString("client_")))
+            .andExpect(jsonPath("$.availableFunds", is(10000.0)))
+            .andReturn();
 
       return mvcResultFunds.getResponse().getContentAsString();
    }

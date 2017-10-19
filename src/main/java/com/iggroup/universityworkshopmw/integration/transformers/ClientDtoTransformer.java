@@ -7,11 +7,11 @@ public class ClientDtoTransformer {
 
    public static ClientDto transform(Client client) {
       return ClientDto.builder()
-         .id(client.getId())
-         .userName(client.getUserName())
-         .availableFunds(client.getAvailableFunds())
-         .runningProfitAndLoss(client.getRunningProfitAndLoss())
-         .build();
+            .id(client.getId())
+            .userName(client.getUserName())
+            .availableFunds(client.getAvailableFunds())
+            .runningProfitAndLoss(client.getRunningProfitAndLoss())
+            .build();
    }
 
 }

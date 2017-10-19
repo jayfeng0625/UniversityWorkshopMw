@@ -10,10 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientDto {
-
    private String id;
    private String userName;
    private Double availableFunds;
    private Double runningProfitAndLoss;
-
 }

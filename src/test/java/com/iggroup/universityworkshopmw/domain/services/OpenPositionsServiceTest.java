@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -58,7 +58,7 @@ public class OpenPositionsServiceTest {
 
       openPositionsService.addOpenPositionForClient("client_1", openPosition1);
 
-      List<OpenPosition> positions = asList(openPosition1);
+      List<OpenPosition> positions = singletonList(openPosition1);
       List<OpenPosition> clientPositions = openPositionsService.getOpenPositionsForClient("client_1");
       IntStream.range(0, clientPositions.size())
             .forEach(idx -> {
@@ -140,7 +140,7 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldUpdateProfitAndLossForMultiplePositionsOnTheSameMarket() throws Exception, NoMarketPriceAvailableException {
+   public void shouldUpdateProfitAndLossForMultiplePositionsOnTheSameMarket() throws Exception {
       initialiseClientPositions();
       when(marketDataCache.getCurrentPriceForMarket(openPosition6.getMarketId())).thenReturn(openPosition6.getOpeningPrice());
       openPositionsService.addOpenPositionForClient("client_1", openPosition6);
@@ -173,11 +173,10 @@ public class OpenPositionsServiceTest {
    }
 
    @Test
-   public void shouldCloseSpecifiedPosition() throws Exception, NoMarketPriceAvailableException {
+   public void shouldCloseSpecifiedPosition() throws Exception {
       initialiseClientPositions();
       when(marketDataCache.getCurrentPriceForMarket(openPosition1.getMarketId())).thenReturn(200.0);
       List<OpenPosition> clientPositions = openPositionsService.getOpenPositionsForClient("client_1");
-
       assertAddedOpenPosition(clientPositions.get(0), openPosition1);
       assertAddedOpenPosition(clientPositions.get(1), openPosition2);
 
@@ -284,44 +283,32 @@ public class OpenPositionsServiceTest {
       when(clientService.getClientData("client_2")).thenReturn(createClient("client_2"));
       when(clientService.getClientData("client_3")).thenReturn(createClient("client_3"));
 
-      newArrayList(openPosition1, openPosition2).stream()
+      newArrayList(openPosition1, openPosition2)
             .forEach(openPosition -> {
                try {
                   mockMarketDataCacheCall(openPosition);
                   openPositionsService.addOpenPositionForClient("client_1", openPosition);
-               } catch (NoAvailableDataException e) {
-                  e.printStackTrace();
-               } catch (NoMarketPriceAvailableException e) {
-                  e.printStackTrace();
-               } catch (MissingBuySizeException e) {
+               } catch (NoAvailableDataException | NoMarketPriceAvailableException | MissingBuySizeException e) {
                   e.printStackTrace();
                }
             });
 
-      newArrayList(openPosition3, openPosition2, openPosition5).stream()
+      newArrayList(openPosition3, openPosition2, openPosition5)
             .forEach(openPosition -> {
                try {
                   mockMarketDataCacheCall(openPosition);
                   openPositionsService.addOpenPositionForClient("client_2", openPosition);
-               } catch (NoAvailableDataException e) {
-                  e.printStackTrace();
-               } catch (NoMarketPriceAvailableException e) {
-                  e.printStackTrace();
-               } catch (MissingBuySizeException e) {
+               } catch (NoAvailableDataException | NoMarketPriceAvailableException | MissingBuySizeException e) {
                   e.printStackTrace();
                }
             });
 
-      newArrayList(openPosition4).stream()
+      newArrayList(openPosition4)
             .forEach(openPosition -> {
                try {
                   mockMarketDataCacheCall(openPosition);
                   openPositionsService.addOpenPositionForClient("client_3", openPosition);
-               } catch (NoAvailableDataException e) {
-                  e.printStackTrace();
-               } catch (NoMarketPriceAvailableException e) {
-                  e.printStackTrace();
-               } catch (MissingBuySizeException e) {
+               } catch (NoAvailableDataException | NoMarketPriceAvailableException | MissingBuySizeException e) {
                   e.printStackTrace();
                }
             });

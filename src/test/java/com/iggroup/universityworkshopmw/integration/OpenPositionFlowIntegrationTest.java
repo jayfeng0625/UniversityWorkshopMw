@@ -2,7 +2,6 @@ package com.iggroup.universityworkshopmw.integration;
 
 import com.iggroup.universityworkshopmw.TestHelper;
 import com.iggroup.universityworkshopmw.domain.caches.MarketDataCache;
-import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.Client;
 import com.iggroup.universityworkshopmw.domain.services.ClientService;
 import com.iggroup.universityworkshopmw.domain.services.OpenPositionsService;
@@ -17,7 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static com.iggroup.universityworkshopmw.TestHelper.APPLICATION_JSON_UTF8;
 import static com.iggroup.universityworkshopmw.TestHelper.convertObjectToJsonBytes;
 import static com.iggroup.universityworkshopmw.integration.transformers.OpenPositionTransformer.transform;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -32,19 +31,18 @@ public class OpenPositionFlowIntegrationTest {
 
    private MockMvc mockMvc;
 
-   private OpenPositionsController openPositionsController;
    private ClientService clientService = spy(ClientService.class);
    private MarketDataCache marketDataCache = spy(MarketDataCache.class);
    private OpenPositionsService openPositionsService = spy(new OpenPositionsService(clientService, marketDataCache));
 
    @Before
    public void setup() {
-      openPositionsController = new OpenPositionsController(openPositionsService);
+      OpenPositionsController openPositionsController = new OpenPositionsController(openPositionsService);
       mockMvc = standaloneSetup(openPositionsController).build();
    }
 
    @Test
-   public void openPositionFlow() throws Exception, NoMarketPriceAvailableException {
+   public void openPositionFlow() throws Exception {
       Client client = clientService.storeNewClient(createClient());
       String clientId = client.getId();
 
@@ -79,7 +77,7 @@ public class OpenPositionFlowIntegrationTest {
       String contentFromGetResponse = mvcResult.getResponse().getContentAsString();
 
       verify(openPositionsService, times(1)).getOpenPositionsForClient(clientId);
-      assertThat(contentFromGetResponse).isEqualTo("[{\"id\":\"" + openPositionId + "\",\"marketId\":\"market_1\",\"profitAndLoss\":0.0,\"openingPrice\":"+openingPrice+",\"buySize\":10}]");
+      assertThat(contentFromGetResponse).isEqualTo("[{\"id\":\"" + openPositionId + "\",\"marketId\":\"market_1\",\"profitAndLoss\":0.0,\"openingPrice\":" + openingPrice + ",\"buySize\":10}]");
 
       //Delete a position
       TestHelper.ResultCaptor<Double> closingPriceCaptor = new TestHelper.ResultCaptor<>();

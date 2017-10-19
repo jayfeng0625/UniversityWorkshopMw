@@ -1,16 +1,14 @@
 package com.iggroup.universityworkshopmw.domain.services;
 
 import com.iggroup.universityworkshopmw.domain.caches.MarketDataCache;
-import com.iggroup.universityworkshopmw.domain.enums.MarketName;
 import com.iggroup.universityworkshopmw.domain.model.Market;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component

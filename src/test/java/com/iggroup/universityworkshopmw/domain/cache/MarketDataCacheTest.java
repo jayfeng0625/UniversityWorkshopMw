@@ -4,14 +4,11 @@ import com.iggroup.universityworkshopmw.domain.caches.MarketDataCache;
 import com.iggroup.universityworkshopmw.domain.enums.MarketName;
 import com.iggroup.universityworkshopmw.domain.exceptions.NoMarketPriceAvailableException;
 import com.iggroup.universityworkshopmw.domain.model.Market;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@Slf4j
 public class MarketDataCacheTest {
 
    private MarketDataCache cache;
@@ -33,13 +30,11 @@ public class MarketDataCacheTest {
 
    @Test
    public void shouldStoreMarketDataWhenIdAndMarketProvided() {
-      // given
-
       // when
       cache.put(ID, market);
 
       // then
-      assertEquals(market, cache.get(ID));
+      assertThat(market).isEqualTo(cache.get(ID));
    }
 
    @Test
@@ -51,7 +46,7 @@ public class MarketDataCacheTest {
       cache.put(ID, market);
 
       // then
-      assertTrue(cache.containsKey(id));
+      assertThat(cache.containsKey(id)).isTrue();
    }
 
    @Test
@@ -63,7 +58,7 @@ public class MarketDataCacheTest {
       double quotePrice = cache.getCurrentPriceForMarket(ID);
 
       // then
-      assertTrue(quotePrice == PRICE);
+      assertThat(quotePrice == PRICE).isTrue();
    }
 
    @Test(expected = NoMarketPriceAvailableException.class)
@@ -79,8 +74,6 @@ public class MarketDataCacheTest {
    public void shouldThrowExceptionWhenTryToPutNullMarket() {
       // given
       cache.put(ID, null);
-      // when
-      // then
    }
 
 }

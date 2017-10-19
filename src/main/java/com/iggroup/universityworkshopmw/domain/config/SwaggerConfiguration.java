@@ -19,19 +19,19 @@ public class SwaggerConfiguration {
    @Bean
    public Docket api() {
       return new Docket(SWAGGER_2)
-         .select()
-         .apis(basePackage("com.iggroup.universityworkshopmw.integration.controllers"))
-         .paths(any())
-         .build()
-         .apiInfo(apiInfo());
+            .select()
+            .apis(basePackage("com.iggroup.universityworkshopmw.integration.controllers"))
+            .paths(any())
+            .build()
+            .apiInfo(apiInfo());
    }
 
    private ApiInfo apiInfo() {
       return new ApiInfoBuilder()
-         .title("University workshop API")
-         .description("The API for the university workshop middleware application")
-         .version("1.0")
-         .contact(new Contact("University Workshop", "https://github.com/IGLearning/UniversityWorkshopMw", "prototypeservice@ig.com"))
-         .build();
+            .title("University workshop API")
+            .description("The API for the university workshop middleware application")
+            .version("1.0")
+            .contact(new Contact("University Workshop", "https://github.com/IGLearning/UniversityWorkshopMw", "prototypeservice@ig.com"))
+            .build();
    }
 }
